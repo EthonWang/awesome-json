@@ -9,24 +9,24 @@ let rightJson = ref(`{"status":2100,"cc":"haha","text":"","error":null,"data":[{
 let jsonShowDialog = ref(false)
 let jsonShowData = ref(JSON.stringify({}))
 
-let tipShow=ref(false)
-let tipMsg=ref("")
+let tipShow = ref(false)
+let tipMsg = ref("")
 
 // 左侧
 function formatterLeftJson() {
-  if (parseLeftJson()){
+  if (parseLeftJson()) {
     leftJson.value = JSON.stringify(JSON.parse(leftJson.value), null, 2)
   }
 }
-function parseLeftJson(){
+function parseLeftJson() {
   try {
-        JSON.parse(leftJson.value);
-        return true
-    } catch (e) {
-      tipMsg.value=e
-      tipShow.value=true
-      return false;
-    }
+    JSON.parse(leftJson.value);
+    return true
+  } catch (e) {
+    tipMsg.value = e
+    tipShow.value = true
+    return false;
+  }
 }
 function removeEscapingLeftJson() {
   leftJson.value = unescapeJsonString(leftJson.value)
@@ -39,20 +39,36 @@ function copyLeftJson() {
 }
 
 function openLeftViewer() {
-  if (parseLeftJson()){
+  if (parseLeftJson()) {
     jsonShowData.value = JSON.parse(leftJson.value)
     jsonShowDialog.value = true
   }
 }
-function cleanLeftJson(){
-  leftJson.value=""
+function cleanLeftJson() {
+  leftJson.value = ""
+}
+function compressLeftJson() {
+  if (parseLeftJson()) {
+    leftJson.value = JSON.stringify(JSON.parse(leftJson.value))
+  }
 }
 
 // 右侧
 function formatterRightJson() {
-  rightJson.value = JSON.stringify(JSON.parse(rightJson.value), null, 2)
+  if (parseRightJson()) {
+    rightJson.value = JSON.stringify(JSON.parse(rightJson.value), null, 2)
+  }
 }
-
+function parseRightJson() {
+  try {
+    JSON.parse(rightJson.value);
+    return true
+  } catch (e) {
+    tipMsg.value = e
+    tipShow.value = true
+    return false;
+  }
+}
 function removeEscapingRightJson() {
   rightJson.value = unescapeJsonString(rightJson.value)
 }
@@ -61,6 +77,22 @@ function addEscapingRightJson() {
 }
 function copyRightJson() {
   copyText(rightJson.value)
+}
+
+function openRightViewer() {
+  if (parseRightJson()) {
+    jsonShowData.value = JSON.parse(rightJson.value)
+    jsonShowDialog.value = true
+  }
+}
+function cleanRightJson() {
+  rightJson.value = ""
+}
+
+function compressRightJson() {
+  if (parseRightJson()) {
+    rightJson.value = JSON.stringify(JSON.parse(rightJson.value))
+  }
 }
 
 function escapeJsonString(str) {
@@ -96,9 +128,10 @@ function copyText(dataStr) {
 <template>
 
   <v-app>
-    <v-app-bar :elevation="2" scroll-behavior="hide">
+    <v-app-bar :elevation="2" scroll-behavior="hide collapse">
       <template v-slot:prepend>
-        <v-app-bar-nav-icon></v-app-bar-nav-icon>
+        <v-img class="ml-4" :width="45" aspect-ratio="4/3" cover src="/favicon.ico"
+          title="powered by vue-json-pretty and jdd"></v-img>
       </template>
 
       <v-app-bar-title>AWESOME JSON</v-app-bar-title>
@@ -119,14 +152,17 @@ function copyText(dataStr) {
             <v-btn class="mr-1" density="comfortable" @click="formatterLeftJson">
               格式化
             </v-btn>
-            <v-btn class="mr-1" density="comfortable"@click="openLeftViewer">
+            <v-btn class="mr-1" density="comfortable" @click="openLeftViewer">
               可视化
             </v-btn>
-            <v-btn class="mr-1" density="comfortable"@click="removeEscapingLeftJson">
+            <v-btn class="mr-1" density="comfortable" @click="removeEscapingLeftJson">
               去转义
             </v-btn>
             <v-btn class="mr-1" density="comfortable" @click="addEscapingLeftJson">
               转义
+            </v-btn>
+            <v-btn class="mr-1" density="comfortable" @click="compressLeftJson">
+              压缩
             </v-btn>
             <v-btn class="mr-1" color="secondary" density="comfortable" @click="copyLeftJson">
               复制
@@ -134,7 +170,6 @@ function copyText(dataStr) {
             <v-btn class="mr-1 " color="red" density="comfortable" @click="cleanLeftJson">
               清空
             </v-btn>
-
           </div>
           <v-sheet rounded="lg">
             <div>
@@ -147,25 +182,33 @@ function copyText(dataStr) {
 
         <!-- 右边 -->
         <v-col cols="12" md="6">
-          <div class="d-flex mb-4 mt-2">
-            <v-btn class="mr-1" @click="formatterRightJson">
+          <div class="d-flex mb-4 mt-4">
+            <v-btn class="mr-1" density="comfortable" @click="formatterRightJson">
               格式化
             </v-btn>
-            <v-btn class="mr-1" @click="removeEscapingRightJson">
-              去除转义
+            <v-btn class="mr-1" density="comfortable" @click="openRightViewer">
+              可视化
             </v-btn>
-            <v-btn class="mr-1" @click="addEscapingRightJson">
-              添加转义
+            <v-btn class="mr-1" density="comfortable" @click="removeEscapingRightJson">
+              去转义
             </v-btn>
-            <v-btn class="mr-1" @click="copyRightJson">
+            <v-btn class="mr-1" density="comfortable" @click="addEscapingRightJson">
+              转义
+            </v-btn>
+            <v-btn class="mr-1" density="comfortable" @click="compressRightJson">
+              压缩
+            </v-btn>
+            <v-btn class="mr-1" color="secondary" density="comfortable" @click="copyRightJson">
               复制
+            </v-btn>
+            <v-btn class="mr-1 " color="red" density="comfortable" @click="cleanRightJson">
+              清空
             </v-btn>
           </div>
           <v-sheet rounded="lg">
-            <v-textarea id="textarearight" clearable label="Right JSON" variant="outlined" rows="10" no-resize
+            <v-textarea id="textarearight" label="Right JSON" variant="outlined" rows="10" no-resize
               v-model="rightJson"></v-textarea>
             <pre id="errorRight" class="error"></pre>
-
           </v-sheet>
         </v-col>
       </v-row>
@@ -174,13 +217,13 @@ function copyText(dataStr) {
       <div class="initContainer">
       </div>
 
-      
-      <div class="diffcontainer " >
+
+      <div class="diffcontainer ">
         <div id="report" class="">
         </div>
-        <div >
-        <pre id="out" class="left codeBlock " ></pre>
-        <pre id="out2" class="right codeBlock "></pre>
+        <div>
+          <pre id="out" class="left codeBlock "></pre>
+          <pre id="out2" class="right codeBlock "></pre>
         </div>
         <ul id="toolbar" class="toolbar"></ul>
 
@@ -188,15 +231,15 @@ function copyText(dataStr) {
 
     </v-main>
 
-    
+
 
 
     <!-- json可视化 -->
     <v-dialog v-model="jsonShowDialog" min-width="80vw" min-height="80vh">
       <v-card prepend-icon="mdi-format-list-bulleted-type">
         <template v-slot:text>
-          <vue-json-pretty :data=jsonShowData :deep="5" :show-double-quotes=true :show-length=true :virtual=true :height=500
-            :show-line=true :show-line-number=true :collapsed-on-click-brackets=true :show-icon=true
+          <vue-json-pretty :data=jsonShowData :deep="5" :show-double-quotes=true :show-length=true :virtual=true
+            :height=500 :show-line=true :show-line-number=true :collapsed-on-click-brackets=true :show-icon=true
             :show-key-value-space=true style="position: relative" />
         </template>
         <template v-slot:actions>
@@ -206,10 +249,7 @@ function copyText(dataStr) {
     </v-dialog>
 
     <!-- 提示信息 -->
-    <v-snackbar
-      v-model="tipShow"
-      :timeout=2000
-    >
+    <v-snackbar v-model="tipShow" :timeout=2000>
       {{ tipMsg }}
     </v-snackbar>
   </v-app>
@@ -218,13 +258,4 @@ function copyText(dataStr) {
 
 </template>
 
-<style scoped>
-.sticky-element {
-            position: -webkit-sticky; /* 兼容 Safari */
-            position: sticky;
-            top: 20px; /* 距离顶部 20px */
-            background-color: yellow;
-            padding: 10px;
-            border: 1px solid #ccc;
-        }
-</style>
+<style scoped></style>
