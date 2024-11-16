@@ -231,9 +231,6 @@ function copyText(dataStr) {
 
     </v-main>
 
-
-
-
     <!-- json可视化 -->
     <v-dialog v-model="jsonShowDialog" min-width="80vw" min-height="80vh">
       <v-card prepend-icon="mdi-format-list-bulleted-type">
