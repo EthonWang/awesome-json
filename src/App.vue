@@ -122,7 +122,6 @@ function copyText(dataStr) {
   });
 }
 
-
 </script>
 
 <template>
@@ -133,12 +132,10 @@ function copyText(dataStr) {
         <v-img class="ml-4" :width="45" aspect-ratio="4/3" cover src="/favicon.ico"
           title="powered by vue-json-pretty and jdd"></v-img>
       </template>
-
       <v-app-bar-title>AWESOME JSON</v-app-bar-title>
     </v-app-bar>
 
     <v-main class="ma-6">
-
       <div>
         <v-btn prepend-icon="mdi-file-compare" id="compare" color="indigo-darken-3" size="large">
           DIFF
@@ -148,29 +145,32 @@ function copyText(dataStr) {
       <v-row>
         <!-- 左边 -->
         <v-col cols="12" md="6">
-          <div class="d-flex mb-4 mt-4">
-            <v-btn class="mr-1" density="comfortable" @click="formatterLeftJson">
-              格式化
-            </v-btn>
-            <v-btn class="mr-1" density="comfortable" @click="openLeftViewer">
-              可视化
-            </v-btn>
-            <v-btn class="mr-1" density="comfortable" @click="removeEscapingLeftJson">
-              去转义
-            </v-btn>
-            <v-btn class="mr-1" density="comfortable" @click="addEscapingLeftJson">
-              转义
-            </v-btn>
-            <v-btn class="mr-1" density="comfortable" @click="compressLeftJson">
-              压缩
-            </v-btn>
-            <v-btn class="mr-1" color="secondary" density="comfortable" @click="copyLeftJson">
-              复制
-            </v-btn>
-            <v-btn class="mr-1 " color="red" density="comfortable" @click="cleanLeftJson">
-              清空
-            </v-btn>
-          </div>
+          <v-row class="mt-4 mb-2 ml-1">
+            <v-vol>
+              <v-btn class="mr-1 mb-2" density="comfortable" @click="formatterLeftJson">
+                格式化
+              </v-btn>
+              <v-btn class="mr-1 mb-2" density="comfortable" @click="openLeftViewer">
+                可视化
+              </v-btn>
+              <v-btn class="mr-1 mb-2" density="comfortable" @click="removeEscapingLeftJson">
+                去转义
+              </v-btn>
+              <v-btn class="mr-1 mb-2" density="comfortable" @click="addEscapingLeftJson">
+                转义
+              </v-btn>
+              <v-btn class="mr-1 mb-2" density="comfortable" @click="compressLeftJson">
+                压缩
+              </v-btn>
+              <v-btn class="mr-1 mb-2" color="secondary" density="comfortable" @click="copyLeftJson">
+                复制
+              </v-btn>
+              <v-btn class="mr-1 mb-2" color="red" density="comfortable" @click="cleanLeftJson">
+                清空
+              </v-btn>
+            </v-vol>
+          </v-row>
+
           <v-sheet rounded="lg">
             <div>
               <v-textarea id="textarealeft" label="Left JSON" variant="outlined" rows="10" no-resize
@@ -182,29 +182,32 @@ function copyText(dataStr) {
 
         <!-- 右边 -->
         <v-col cols="12" md="6">
-          <div class="d-flex mb-4 mt-4">
-            <v-btn class="mr-1" density="comfortable" @click="formatterRightJson">
-              格式化
-            </v-btn>
-            <v-btn class="mr-1" density="comfortable" @click="openRightViewer">
-              可视化
-            </v-btn>
-            <v-btn class="mr-1" density="comfortable" @click="removeEscapingRightJson">
-              去转义
-            </v-btn>
-            <v-btn class="mr-1" density="comfortable" @click="addEscapingRightJson">
-              转义
-            </v-btn>
-            <v-btn class="mr-1" density="comfortable" @click="compressRightJson">
-              压缩
-            </v-btn>
-            <v-btn class="mr-1" color="secondary" density="comfortable" @click="copyRightJson">
-              复制
-            </v-btn>
-            <v-btn class="mr-1 " color="red" density="comfortable" @click="cleanRightJson">
-              清空
-            </v-btn>
-          </div>
+          <v-row class="mt-4 mb-2 ml-1">
+            <v-vol>
+              <v-btn class="mr-1 mb-2" density="comfortable" @click="formatterRightJson">
+                格式化
+              </v-btn>
+              <v-btn class="mr-1 mb-2" density="comfortable" @click="openRightViewer">
+                可视化
+              </v-btn>
+              <v-btn class="mr-1 mb-2" density="comfortable" @click="removeEscapingRightJson">
+                去转义
+              </v-btn>
+              <v-btn class="mr-1  mb-2" density="comfortable" @click="addEscapingRightJson">
+                转义
+              </v-btn>
+              <v-btn class="mr-1 mb-2" density="comfortable" @click="compressRightJson">
+                压缩
+              </v-btn>
+              <v-btn class="mr-1 mb-2" color="secondary" density="comfortable" @click="copyRightJson">
+                复制
+              </v-btn>
+              <v-btn class="mr-1 mb-2" color="red" density="comfortable" @click="cleanRightJson">
+                清空
+              </v-btn>
+            </v-vol>
+          </v-row>
+
           <v-sheet rounded="lg">
             <v-textarea id="textarearight" label="Right JSON" variant="outlined" rows="10" no-resize
               v-model="rightJson"></v-textarea>
@@ -213,10 +216,8 @@ function copyText(dataStr) {
         </v-col>
       </v-row>
 
-
       <div class="initContainer">
       </div>
-
 
       <div class="diffcontainer ">
         <div id="report" class="">
