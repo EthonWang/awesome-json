@@ -1,7 +1,25 @@
 <script setup>
 import { useRouter } from 'vue-router'
+import { onMounted, onBeforeUnmount } from 'vue'
 
 const router = useRouter()
+
+function onBeforeUnload(e) {
+  const editors = document.querySelectorAll('.cm-content')
+  const hasContent = Array.from(editors).some(el => el.textContent.trim())
+  if (hasContent) {
+    e.preventDefault()
+    e.returnValue = ''
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('beforeunload', onBeforeUnload)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', onBeforeUnload)
+})
 </script>
 
 <template>
