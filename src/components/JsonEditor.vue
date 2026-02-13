@@ -112,7 +112,7 @@ defineExpose({
   },
   removeEscaping() {
     let text = getContent()
-    text = text.replace(/\\"/g, '"').replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\t/g, '\t').replace(/\\\\/g, '\\')
+    text = text.replace(/\\\\/g, '\x00').replace(/\\"/g, '"').replace(/\\n/g, '\n').replace(/\\r/g, '\r').replace(/\\t/g, '\t').replace(/\x00/g, '\\')
     setContent(text)
     emit('update:modelValue', text)
   },

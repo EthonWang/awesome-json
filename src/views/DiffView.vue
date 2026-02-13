@@ -62,11 +62,12 @@ function parseJson(side) {
 function removeEscaping(side) {
   const target = side === 'left' ? leftJson : rightJson
   target.value = target.value
+    .replace(/\\\\/g, '\x00')
     .replace(/\\"/g, '"')
     .replace(/\\n/g, '\n')
     .replace(/\\r/g, '\r')
     .replace(/\\t/g, '\t')
-    .replace(/\\\\/g, '\\')
+    .replace(/\x00/g, '\\')
 }
 
 function addEscaping(side) {
