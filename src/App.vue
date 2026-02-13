@@ -5,9 +5,17 @@ import { onMounted, onBeforeUnmount } from 'vue'
 const router = useRouter()
 
 function onBeforeUnload(e) {
-  const editors = document.querySelectorAll('.cm-content')
-  const hasContent = Array.from(editors).some(el => el.textContent.trim())
-  if (hasContent) {
+  const textareas = document.querySelectorAll('textarea')
+  const taHasContent = Array.from(textareas).some(el => el.value.trim())
+
+  const cmContents = document.querySelectorAll('.cm-content')
+  const cmHasContent = Array.from(cmContents).some(el => {
+    const clone = el.cloneNode(true)
+    clone.querySelectorAll('.cm-placeholder').forEach(p => p.remove())
+    return clone.textContent.trim()
+  })
+
+  if (cmHasContent || taHasContent) {
     e.preventDefault()
     e.returnValue = ''
   }
