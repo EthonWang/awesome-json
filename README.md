@@ -1,6 +1,6 @@
 # Awesome JSON
 
-在线 JSON 工具集，支持JSON的编辑、格式刷、DIFF等，基于 Vue 3 + Vuetify 3 构建。
+在线 JSON 工具集，支持JSON编辑、格式化、DIFF等，基于 Vue 3 + Vuetify 3 构建。
 
 ## 功能
 
