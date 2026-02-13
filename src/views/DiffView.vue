@@ -4,8 +4,16 @@ import VueJsonPretty from 'vue-json-pretty'
 import 'vue-json-pretty/lib/styles.css'
 import JsonDiff from '@/components/JsonDiff.vue'
 
-const leftJson = ref(`{"status":200,"text":"","data":[{"news_id":51184,"title":"iPhone X Review: Innovative future with real black technology","source":"Netease phone"},{"news_id":51183,"title":"Traffic paradise: How to design streets for people and unmanned vehicles in the future?","source":"Netease smart","link":"http://netease.smart/traffic-paradise/1235"},{"news_id":51182,"title":"Teslamask's American Business Relations: The government does not pay billions to build factories","source":"AI Finance","members":["Daniel","Mike","John"]}],"data2":[{"news_id":51184,"title":"iPhone X Review: Innovative future with real black technology","source":"Netease phone"},{"news_id":51183,"title":"Traffic paradise: How to design streets for people and unmanned vehicles in the future?","source":"Netease smart","link":"http://netease.smart/traffic-paradise/1235"},{"news_id":51182,"title":"Teslamask's American Business Relations: The government does not pay billions to build factories","source":"AI Finance","members":["Daniel","Mike","John"]}]}`)
-const rightJson = ref(`{"status":2100,"cc":"haha","text":"","error":null,"data":[{"newsdasd_id":51184,"title":"iPhone X Review: Innovative future with real asdablack technology","source":"Netease phone"},{"news_id":51183,"title":"Traffic paradiadsse: How to design streets for people and unmanned vehicles in the future?","source":"Netease smart","link":"http://netease.smart/traffic-paradise/123asda5"},{"news_id":51182,"title":"Teslamask's American Business Relations: The government does not pay billions to build factories","source":"AI Finance","aa":["Daniel","Mike","Johasdasn"]}]}`)
+const leftJson = ref('')
+const rightJson = ref('')
+
+const sampleLeftJson = `{"status":200,"text":"","data":[{"news_id":51184,"title":"iPhone X Review: Innovative future with real black technology","source":"Netease phone"},{"news_id":51183,"title":"Traffic paradise: How to design streets for people and unmanned vehicles in the future?","source":"Netease smart","link":"http://netease.smart/traffic-paradise/1235"},{"news_id":51182,"title":"Teslamask's American Business Relations: The government does not pay billions to build factories","source":"AI Finance","members":["Daniel","Mike","John"]}],"data2":[{"news_id":51184,"title":"iPhone X Review: Innovative future with real black technology","source":"Netease phone"},{"news_id":51183,"title":"Traffic paradise: How to design streets for people and unmanned vehicles in the future?","source":"Netease smart","link":"http://netease.smart/traffic-paradise/1235"},{"news_id":51182,"title":"Teslamask's American Business Relations: The government does not pay billions to build factories","source":"AI Finance","members":["Daniel","Mike","John"]}]}`
+const sampleRightJson = `{"status":2100,"cc":"haha","text":"","error":null,"data":[{"newsdasd_id":51184,"title":"iPhone X Review: Innovative future with real asdablack technology","source":"Netease phone"},{"news_id":51183,"title":"Traffic paradiadsse: How to design streets for people and unmanned vehicles in the future?","source":"Netease smart","link":"http://netease.smart/traffic-paradise/123asda5"},{"news_id":51182,"title":"Teslamask's American Business Relations: The government does not pay billions to build factories","source":"AI Finance","aa":["Daniel","Mike","Johasdasn"]}]}`
+
+function loadSampleData() {
+  leftJson.value = JSON.stringify(JSON.parse(sampleLeftJson), null, 2)
+  rightJson.value = JSON.stringify(JSON.parse(sampleRightJson), null, 2)
+}
 
 const jsonShowDialog = ref(false)
 const jsonShowData = ref({})
@@ -124,6 +132,9 @@ function closeDiff() {
       <v-btn prepend-icon="mdi-file-compare" color="indigo-darken-3" size="large" @click="startDiff">
         DIFF
       </v-btn>
+      <v-btn variant="text" class="ml-2 text-decoration-underline" size="small" @click="loadSampleData">
+        加载示例数据
+      </v-btn>
     </div>
 
     <v-row>
@@ -141,7 +152,7 @@ function closeDiff() {
           </div>
         </v-row>
         <v-sheet rounded="lg">
-          <v-textarea label="Left JSON" variant="outlined" rows="10" no-resize
+          <v-textarea label="左侧 JSON" placeholder="在此处输入 JSON" variant="outlined" rows="10" no-resize
             v-model="leftJson"></v-textarea>
         </v-sheet>
       </v-col>
@@ -160,7 +171,7 @@ function closeDiff() {
           </div>
         </v-row>
         <v-sheet rounded="lg">
-          <v-textarea label="Right JSON" variant="outlined" rows="10" no-resize
+          <v-textarea label="右侧 JSON" placeholder="在此处输入 JSON" variant="outlined" rows="10" no-resize
             v-model="rightJson"></v-textarea>
         </v-sheet>
       </v-col>

@@ -19,6 +19,7 @@ const errorMsg = ref('')
 const showMissing = ref(true)
 const showTypes = ref(true)
 const showEquality = ref(true)
+const panelCollapsed = ref(false)
 
 const leftCodeRef = ref(null)
 const rightCodeRef = ref(null)
@@ -173,13 +174,20 @@ onUnmounted(() => {
     <!-- 悬浮控制面板 -->
     <div v-if="!errorMsg && diffs.length > 0" class="diff-floating-panel">
       <v-card elevation="8" rounded="lg" class="pa-3">
-        <!-- 差异数量 -->
-        <div class="panel-title">
-          <v-icon size="small" color="indigo" class="mr-1">mdi-file-compare</v-icon>
-          <strong>{{ diffs.length }}</strong> 处差异
+        <!-- 标题 + 折叠按钮 -->
+        <div class="d-flex align-center justify-space-between">
+          <div class="panel-title">
+            <v-icon size="small" color="indigo" class="mr-1">mdi-file-compare</v-icon>
+            <strong>{{ diffs.length }}</strong> 处差异
+          </div>
+          <v-btn icon size="x-small" variant="text" @click="panelCollapsed = !panelCollapsed"
+            :title="panelCollapsed ? '展开面板' : '收起面板'">
+            <v-icon>{{ panelCollapsed ? 'mdi-chevron-down' : 'mdi-chevron-up' }}</v-icon>
+          </v-btn>
         </div>
 
-        <v-divider class="my-2"></v-divider>
+        <template v-if="!panelCollapsed">
+          <v-divider class="my-2"></v-divider>
 
         <!-- 导航 -->
         <div class="panel-nav">
@@ -227,6 +235,7 @@ onUnmounted(() => {
         <v-btn block variant="outlined" size="small" @click="handleNewDiff" prepend-icon="mdi-close">
           关闭diff
         </v-btn>
+        </template>
       </v-card>
     </div>
 
