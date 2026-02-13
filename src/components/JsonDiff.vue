@@ -252,9 +252,9 @@ onUnmounted(() => {
     <!-- 对比区域 -->
     <div v-if="!errorMsg && leftLines.length > 0" class="diff-body">
       <div class="diff-pane" ref="leftCodeRef">
-        <div class="diff-pane-header">
-          <v-icon size="small" class="mr-1">mdi-arrow-left-bold</v-icon>
+        <div class="diff-pane-header" style="justify-content: flex-end;">
           Left
+          <v-icon size="small" class="ml-1">mdi-arrow-left-bold</v-icon>
         </div>
         <div class="code-block">
           <div v-for="(line, idx) in leftLines" :key="'l' + idx" class="code-line"
