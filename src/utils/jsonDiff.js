@@ -189,7 +189,7 @@ function escapeJsonStr(str) {
     .replace(/\r/g, '\\r')
     .replace(/\t/g, '\\t')
     .replace(/\f/g, '\\f')
-    .replace(/\b/g, '\\b')
+    .replace(/\x08/g, '\\b')
 }
 
 /**
