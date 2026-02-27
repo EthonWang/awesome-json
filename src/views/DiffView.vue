@@ -113,9 +113,12 @@ function cleanJson(side) {
 
 function startDiff() {
   if (parseJson('left') && parseJson('right')) {
-    showDiff.value = true
+    showDiff.value = false
     nextTick(() => {
-      diffAnchorRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      showDiff.value = true
+      nextTick(() => {
+        diffAnchorRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      })
     })
   }
 }
