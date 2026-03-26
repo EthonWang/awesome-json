@@ -146,8 +146,8 @@ function addEscaping() {
       <div class="toolbar d-flex align-center flex-wrap px-3 py-2">
         <v-tooltip text="检测到文本变化会触发自动格式化" location="bottom">
           <template v-slot:activator="{ props }">
-            <v-btn v-bind="props" class="mr-1" size="small" variant="tonal" density="comfortable"
-              :color="autoFormat ? 'indigo-darken-3' : undefined"
+            <v-btn v-bind="props" class="mr-1 auto-format-btn" size="small" variant="flat" density="comfortable"
+              :class="{ 'auto-format-active': autoFormat }"
               @click="autoFormat = !autoFormat"
               prepend-icon="mdi-auto-fix">
               {{ autoFormat ? '关闭自动格式化' : '自动格式化' }}
@@ -296,5 +296,29 @@ function addEscaping() {
   background-color: #f5f5f5;
   border-top: 1px solid #e0e0e0;
   flex-shrink: 0;
+}
+
+.auto-format-btn {
+  color: #666 !important;
+  background: transparent !important;
+  transition: all 0.3s ease;
+}
+
+.auto-format-btn.auto-format-active {
+  background: rgba(102, 126, 234, 0.06) !important;
+  font-weight: 700;
+  border: none !important;
+}
+
+.auto-format-btn.auto-format-active :deep(.v-btn__content),
+.auto-format-btn.auto-format-active :deep(.v-btn__prepend .v-icon) {
+  background: linear-gradient(135deg, #4a5fe0 0%, #8b3fbd 50%, #e054c3 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auto-format-btn.auto-format-active:hover {
+  background: rgba(102, 126, 234, 0.08) !important;
 }
 </style>
