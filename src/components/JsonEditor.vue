@@ -1,10 +1,44 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, shallowRef, watch } from 'vue'
-import { basicSetup, EditorView } from 'codemirror'
+import { EditorView } from 'codemirror'
 import { EditorState } from '@codemirror/state'
 import { json } from '@codemirror/lang-json'
-import { placeholder } from '@codemirror/view'
-import { codeFolding } from '@codemirror/language'
+import {
+  lineNumbers,
+  highlightActiveLineGutter,
+  highlightSpecialChars,
+  drawSelection,
+  dropCursor,
+  rectangularSelection,
+  crosshairCursor,
+  highlightActiveLine,
+  keymap,
+  placeholder,
+} from '@codemirror/view'
+import {
+  foldGutter,
+  indentOnInput,
+  syntaxHighlighting,
+  defaultHighlightStyle,
+  bracketMatching,
+  foldKeymap,
+  codeFolding,
+} from '@codemirror/language'
+import { history, defaultKeymap, historyKeymap } from '@codemirror/commands'
+import {
+  search,
+  searchKeymap,
+  highlightSelectionMatches,
+  openSearchPanel,
+} from '@codemirror/search'
+import {
+  closeBrackets,
+  autocompletion,
+  closeBracketsKeymap,
+  completionKeymap,
+} from '@codemirror/autocomplete'
+import { lintKeymap } from '@codemirror/lint'
+import { createSearchPanel, searchPanelTheme, openSearchPanelWithReplace } from './CustomSearchPanel.js'
 
 function prepareFoldPlaceholder(state, range) {
   const charBefore = range.from > 0 ? state.doc.sliceString(range.from - 1, range.from) : ''
@@ -147,6 +181,12 @@ defineExpose({
     setContent(text)
     emit('update:modelValue', text)
   },
+  openSearch() {
+    if (editorView.value) {
+      openSearchPanel(editorView.value)
+      editorView.value.focus()
+    }
+  },
 })
 
 // 外部 modelValue 变化时同步到编辑器
@@ -160,7 +200,38 @@ onMounted(() => {
   const state = EditorState.create({
     doc: props.modelValue || '',
     extensions: [
-      basicSetup,
+      // -- 手动展开 basicSetup（移除默认 search，用自定义面板替代）--
+      lineNumbers(),
+      highlightActiveLineGutter(),
+      highlightSpecialChars(),
+      history(),
+      foldGutter(),
+      drawSelection(),
+      dropCursor(),
+      EditorState.allowMultipleSelections.of(true),
+      indentOnInput(),
+      syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+      bracketMatching(),
+      closeBrackets(),
+      autocompletion(),
+      rectangularSelection(),
+      crosshairCursor(),
+      highlightActiveLine(),
+      highlightSelectionMatches(),
+      // 自定义搜索面板
+      search({ top: true, createPanel: createSearchPanel }),
+      searchPanelTheme,
+      keymap.of([
+        ...closeBracketsKeymap,
+        ...defaultKeymap,
+        ...searchKeymap,
+        ...historyKeymap,
+        ...foldKeymap,
+        ...completionKeymap,
+        ...lintKeymap,
+        { key: 'Mod-h', run: openSearchPanelWithReplace, scope: 'editor search-panel' },
+      ]),
+      // -- 项目自定义扩展 --
       json(),
       codeFolding({
         preparePlaceholder(state, range) {

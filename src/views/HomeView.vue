@@ -117,6 +117,11 @@ function addEscaping() {
   const editor = getActiveEditor()
   if (editor) editor.addEscaping()
 }
+
+function openSearch() {
+  const editor = getActiveEditor()
+  if (editor) editor.openSearch()
+}
 </script>
 
 <template>
@@ -158,6 +163,7 @@ function addEscaping() {
         <v-btn class="mr-1" size="small" variant="text" density="comfortable" @click="formatJson" prepend-icon="mdi-code-braces">格式化</v-btn>
         <v-btn class="mr-1" size="small" variant="text" density="comfortable" @click="compressJson" prepend-icon="mdi-arrow-collapse-horizontal">压缩</v-btn>
         <v-btn class="mr-1" size="small" variant="text" density="comfortable" @click="validateJson" prepend-icon="mdi-check-circle-outline">校验</v-btn>
+        <v-btn class="mr-1" size="small" variant="text" density="comfortable" @click="openSearch" prepend-icon="mdi-magnify">搜索</v-btn>
         <v-divider vertical class="mx-2" style="height: 24px;" />
         <v-btn class="mr-1" size="small" variant="text" density="comfortable" @click="removeEscaping" prepend-icon="mdi-format-clear">去转义</v-btn>
         <v-btn class="mr-1" size="small" variant="text" density="comfortable" @click="addEscaping" prepend-icon="mdi-code-string">转义</v-btn>
