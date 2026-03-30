@@ -23,6 +23,7 @@ import {
   bracketMatching,
   foldKeymap,
   codeFolding,
+  ensureSyntaxTree,
 } from '@codemirror/language'
 import { history, defaultKeymap, historyKeymap } from '@codemirror/commands'
 import {
@@ -47,7 +48,7 @@ function prepareFoldPlaceholder(state, range) {
   // Determine bracket type
   const isArray = charBefore === '[' || charAfter === ']'
   const isObject = charBefore === '{' || charAfter === '}'
-  if (!isArray && !isObject) return null
+  if (!isArray && !isObject) return { type: 'unknown', count: null }
 
   // Try to parse the full bracketed text to count items
   const fullText = state.doc.sliceString(range.from - 1, range.to + 1)
@@ -84,8 +85,12 @@ function getContent() {
 function setContent(text) {
   if (!editorView.value) return
   isInternalUpdate = true
+  // 先清空再插入，强制语法树完全重新解析
   editorView.value.dispatch({
-    changes: { from: 0, to: editorView.value.state.doc.length, insert: text }
+    changes: { from: 0, to: editorView.value.state.doc.length, insert: '' }
+  })
+  editorView.value.dispatch({
+    changes: { from: 0, to: 0, insert: text }
   })
   isInternalUpdate = false
 }
@@ -205,6 +210,28 @@ onMounted(() => {
       highlightActiveLineGutter(),
       highlightSpecialChars(),
       history(),
+      codeFolding({
+        preparePlaceholder(state, range) {
+          return prepareFoldPlaceholder(state, range)
+        },
+        placeholderDOM(view, onclick, prepared) {
+          const el = document.createElement('span')
+          el.className = 'cm-fold-placeholder'
+          el.style.cssText = 'cursor: pointer; color: #1a73e8; background: #e8f0fe; border: 1px solid #c2d7f5; border-radius: 3px; padding: 0 4px; font-size: 12px; margin: 0 2px;'
+          if (prepared && prepared.count !== null) {
+            el.textContent = prepared.type === 'array'
+              ? `[ ... ${prepared.count} items ]`
+              : `{ ... ${prepared.count} keys }`
+          } else if (prepared) {
+            el.textContent = prepared.type === 'array' ? '[ ... ]' : '{ ... }'
+          } else {
+            el.textContent = '…'
+          }
+          el.title = '点击展开'
+          el.onclick = onclick
+          return el
+        },
+      }),
       foldGutter(),
       drawSelection(),
       dropCursor(),
@@ -233,28 +260,6 @@ onMounted(() => {
       ]),
       // -- 项目自定义扩展 --
       json(),
-      codeFolding({
-        preparePlaceholder(state, range) {
-          return prepareFoldPlaceholder(state, range)
-        },
-        placeholderDOM(view, onclick, prepared) {
-          const el = document.createElement('span')
-          el.className = 'cm-fold-placeholder'
-          el.style.cssText = 'cursor: pointer; color: #1a73e8; background: #e8f0fe; border: 1px solid #c2d7f5; border-radius: 3px; padding: 0 4px; font-size: 12px; margin: 0 2px;'
-          if (prepared && prepared.count !== null) {
-            el.textContent = prepared.type === 'array'
-              ? `[ ... ${prepared.count} items ]`
-              : `{ ... ${prepared.count} keys }`
-          } else if (prepared) {
-            el.textContent = prepared.type === 'array' ? '[ ... ]' : '{ ... }'
-          } else {
-            el.textContent = '…'
-          }
-          el.title = '点击展开'
-          el.onclick = onclick
-          return el
-        },
-      }),
       placeholder('在此处输入 JSON'),
       EditorView.updateListener.of((update) => {
         if (update.docChanged && !isInternalUpdate) {
@@ -262,6 +267,8 @@ onMounted(() => {
           emit('update:modelValue', content)
           validateJson()
           triggerAutoFormat()
+          // 强制同步解析语法树，确保折叠箭头及时更新
+          ensureSyntaxTree(update.state, update.state.doc.length, 500)
         }
       }),
       EditorView.theme({
