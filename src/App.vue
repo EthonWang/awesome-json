@@ -68,11 +68,14 @@ onBeforeUnmount(() => {
   padding: 12px;
 }
 .json-viewer-tree .vjs-tree-node {
-  padding-left: 50px !important;
+  padding-left: 0 !important;
 }
 .json-viewer-tree .vjs-node-index {
-  width: 40px;
+  position: static;
   text-align: right;
-  margin-right: 8px;
+  margin-right: 4px;
+  flex-shrink: 0;
+  color: #999;
+  user-select: none;
 }
 </style>
