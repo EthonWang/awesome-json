@@ -39,7 +39,7 @@ onBeforeUnmount(() => {
       </template>
       <v-app-bar-title class="font-weight-bold" style="flex: 0 0 auto; max-width: fit-content;">AWESOME JSON</v-app-bar-title>
 
-      <div class="ml-16" style="padding-left: 120px;">
+      <div class="ml-6 d-flex align-center flex-nowrap">
         <v-btn variant="text" to="/" prepend-icon="mdi-pencil-box-outline" exact
           :color="$route.path === '/' ? 'indigo-darken-3' : undefined"
           :class="{ 'font-weight-bold': $route.path === '/' }">编辑</v-btn>

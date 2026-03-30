@@ -7,8 +7,8 @@ import JsonDiff from '@/components/JsonDiff.vue'
 const leftJson = ref('')
 const rightJson = ref('')
 
-const sampleLeftJson = `{"status":200,"text":"","data":[{"news_id":51184,"title":"iPhone X Review: Innovative future with real black technology","source":"Netease phone"},{"news_id":51183,"title":"Traffic paradise: How to design streets for people and unmanned vehicles in the future?","source":"Netease smart","link":"http://netease.smart/traffic-paradise/1235"},{"news_id":51182,"title":"Teslamask's American Business Relations: The government does not pay billions to build factories","source":"AI Finance","members":["Daniel","Mike","John"]}],"data2":[{"news_id":51184,"title":"iPhone X Review: Innovative future with real black technology","source":"Netease phone"},{"news_id":51183,"title":"Traffic paradise: How to design streets for people and unmanned vehicles in the future?","source":"Netease smart","link":"http://netease.smart/traffic-paradise/1235"},{"news_id":51182,"title":"Teslamask's American Business Relations: The government does not pay billions to build factories","source":"AI Finance","members":["Daniel","Mike","John"]}]}`
-const sampleRightJson = `{"status":2100,"cc":"haha","text":"","error":null,"data":[{"newsdasd_id":51184,"title":"iPhone X Review: Innovative future with real asdablack technology","source":"Netease phone"},{"news_id":51183,"title":"Traffic paradiadsse: How to design streets for people and unmanned vehicles in the future?","source":"Netease smart","link":"http://netease.smart/traffic-paradise/123asda5"},{"news_id":51182,"title":"Teslamask's American Business Relations: The government does not pay billions to build factories","source":"AI Finance","aa":["Daniel","Mike","Johasdasn"]}]}`
+const sampleLeftJson = `{"name":"alpha","version":3,"enabled":true,"config":{"mode":"fast","retries":5,"verbose":false},"items":[{"id":"a1","label":"foo","value":100,"tags":["x","y","z"],"meta":null},{"id":"a2","label":"bar","value":200,"tags":["x"],"meta":{"flag":true}},{"id":"a3","label":"baz","value":300,"tags":["y","z"],"meta":null}],"extra":"hello"}`
+const sampleRightJson = `{"name":"alpha","version":"3","enabled":true,"config":{"mode":"safe","retries":8,"timeout":30},"items":[{"id":"a1","label":"foo","value":150,"tags":["x","y"],"meta":"none"},{"id":"a2","label":"qux","value":200,"tags":["x","w"],"meta":{"flag":false,"note":"test"}}],"limit":10}`
 
 function loadSampleData() {
   leftJson.value = JSON.stringify(JSON.parse(sampleLeftJson), null, 2)
@@ -210,3 +210,6 @@ function closeDiff() {
     {{ tipMsg }}
   </v-snackbar>
 </template>
+
+<style scoped>
+</style>
