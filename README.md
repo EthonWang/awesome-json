@@ -12,8 +12,9 @@
 [![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-<!-- 截图占位：建议放一张编辑器主界面截图 -->
-<!-- ![Screenshot](./screenshots/editor.png) -->
+**在线体验：[awesome-json.wangyj.site](https://awesome-json.wangyj.site/)**
+
+![Screenshot](./docs/images/preview.png)
 
 </div>
 
@@ -24,9 +25,6 @@
 ### 📝 JSON 编辑器
 
 > VS Code 风格的多标签页 JSON 编辑器，专业级编辑体验。
-
-<!-- 截图占位：编辑器界面截图 -->
-<!-- ![Editor](./screenshots/editor-detail.png) -->
 
 - **多标签页** — 支持多 Tab 并行编辑，各标签页独立互不干扰
 - **智能编辑器** — 基于 CodeMirror 6，提供语法高亮、括号匹配、代码折叠、自动补全
@@ -39,9 +37,6 @@
 ### 🔍 JSON Diff
 
 > 语义级递归对比，精准定位每一处差异。
-
-<!-- 截图占位：Diff 界面截图 -->
-<!-- ![Diff](./screenshots/diff-detail.png) -->
 
 - **语义对比** — 深度递归对比 JSON 结构，而非简单文本比较
 - **三种差异标记** — 🟢 缺失 · 🔴 类型不同 · 🟠 值不等
@@ -118,36 +113,6 @@ awesome-json/
 ├── package.json
 └── vite.config.js
 ```
-
----
-
-## 📸 截图
-
-<!-- 截图占位：请替换为实际截图路径 -->
-
-<details>
-<summary>📝 JSON 编辑器</summary>
-
-<!-- ![Editor Screenshot](./screenshots/editor.png) -->
-*截图待补充*
-
-</details>
-
-<details>
-<summary>🔍 JSON Diff</summary>
-
-<!-- ![Diff Screenshot](./screenshots/diff.png) -->
-*截图待补充*
-
-</details>
-
-<details>
-<summary>🔎 搜索替换</summary>
-
-<!-- ![Search Screenshot](./screenshots/search.png) -->
-*截图待补充*
-
-</details>
 
 ---
 
