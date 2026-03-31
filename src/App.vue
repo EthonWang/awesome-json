@@ -49,10 +49,6 @@ onBeforeUnmount(() => {
       </div>
 
       <v-spacer />
-
-      <template v-slot:append>
-        <v-btn icon="mdi-github" variant="text" href="https://github.com/EthonWang/awesome-json" target="_blank"></v-btn>
-      </template>
     </v-app-bar>
 
     <router-view v-slot="{ Component }">
