@@ -1,141 +1,89 @@
 <div align="center">
 
+<img src="./docs/images/logo.svg" width="76" alt="Awesome JSON logo" />
+
 # Awesome JSON
 
-**一款优雅的在线 JSON 工具集，让 JSON 处理变得简单高效。**
+**一个顺手的 JSON 工作台。** 让编辑、校验、格式化和差异对比都更直观。
 
-基于 Vue 3 + Vuetify 3 + CodeMirror 6 构建
+<p>
+  <a href="https://awesome-json.wangyj.site/"><strong>在线体验 ↗</strong></a>
+  &nbsp;·&nbsp;
+  <a href="#快速开始">快速开始</a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/EthonWang/awesome-json/issues">反馈问题</a>
+</p>
 
-[![Vue](https://img.shields.io/badge/Vue-3.5-4FC08D?logo=vuedotjs&logoColor=white)](https://vuejs.org/)
-[![Vuetify](https://img.shields.io/badge/Vuetify-3.7-1867C0?logo=vuetify&logoColor=white)](https://vuetifyjs.com/)
-[![CodeMirror](https://img.shields.io/badge/CodeMirror-6-D30707?logo=codemirror&logoColor=white)](https://codemirror.net/)
-[![Vite](https://img.shields.io/badge/Vite-5-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+<p>
+  <img alt="Vue 3" src="https://img.shields.io/badge/Vue-3-42b883?logo=vuedotjs&logoColor=white" />
+  <img alt="Vuetify 3" src="https://img.shields.io/badge/Vuetify-3-1867c0?logo=vuetify&logoColor=white" />
+  <img alt="CodeMirror 6" src="https://img.shields.io/badge/CodeMirror-6-d30707?logo=codemirror&logoColor=white" />
+  <img alt="Vite 5" src="https://img.shields.io/badge/Vite-5-646cff?logo=vite&logoColor=white" />
+</p>
 
-**在线体验：[awesome-json.wangyj.site](https://awesome-json.wangyj.site/)**
-
-![Screenshot](./docs/images/preview.png)
+<img src="./docs/images/preview.png" alt="Awesome JSON 编辑与差异对比界面预览" width="960" />
 
 </div>
 
----
+## 为什么用 Awesome JSON？
 
-## ✨ 功能特性
+处理接口响应、配置文件或测试数据时，常常需要在编辑和对比之间来回切换。Awesome JSON 把这些常用操作放在同一个页面里：写入内容、检查语法、整理格式，再对照两份 JSON 找到真正变化的字段。数据处理在浏览器中完成。
 
-### 📝 JSON 编辑器
+| 编辑与整理                                                                   | 精准对比                                                     |
+| :--------------------------------------------------------------------------- | :----------------------------------------------------------- |
+| **多标签编辑**：并行处理多份 JSON，标签内容彼此独立。                        | **语义级 Diff**：递归比较对象和数组，定位到字段路径。        |
+| **即时反馈**：语法高亮、自动补全、括号匹配、代码折叠与实时校验。             | **分类标记**：区分缺失项、类型变化和值变化，并可按类别筛选。 |
+| **常用操作一键完成**：自动或手动格式化、压缩、搜索替换、转义、去转义与复制。 | **逐处查看**：并排展示结果，借助悬浮面板和快捷键跳转差异。   |
 
-> VS Code 风格的多标签页 JSON 编辑器，专业级编辑体验。
+## 看看实际界面
 
-- **多标签页** — 支持多 Tab 并行编辑，各标签页独立互不干扰
-- **智能编辑器** — 基于 CodeMirror 6，提供语法高亮、括号匹配、代码折叠、自动补全
-- **自动格式化** — 输入后自动美化 JSON（800ms 防抖），也可手动格式化/压缩
-- **实时校验** — 输入即校验 JSON 合法性，状态栏实时反馈
-- **搜索替换** — 自定义 VS Code 风格搜索面板，支持正则、大小写、全词匹配
-- **转义处理** — 一键转义/去转义 JSON 字符串
-- **快捷操作** — 复制、清空、折叠占位符显示 `{ ... 3 keys }` / `[ ... 5 items ]`
+### 编辑器
 
-### 🔍 JSON Diff
+多标签工作区基于 CodeMirror 6，编辑时会提示 JSON 是否合法；自动格式化可随时开关。
 
-> 语义级递归对比，精准定位每一处差异。
+<img src="./docs/images/editor-current.png" alt="当前版本的 JSON 编辑器：多标签、工具栏和格式化后的 JSON" width="900" />
 
-- **语义对比** — 深度递归对比 JSON 结构，而非简单文本比较
-- **三种差异标记** — 🟢 缺失 · 🔴 类型不同 · 🟠 值不等
-- **差异导航** — 悬浮控制面板，支持上/下跳转、按类型筛选
-- **键盘快捷键** — `N` / `→` 下一个，`P` / `←` 上一个
-- **JSON 可视化** — 树形结构展示，支持虚拟滚动、折叠、行号
-- **示例数据** — 一键加载示例，快速体验 Diff 功能
+### JSON Diff
 
----
+在 **DIFF** 页粘贴两份 JSON，点击「开始对比」即可看到并排结果。绿色表示一侧缺失，红色表示类型不同，橙色表示值不相等；右侧面板显示差异总数、路径与详情。
 
-## 🛠️ 技术栈
+<img src="./docs/images/diff-current.png" alt="当前版本的 JSON Diff：并排高亮差异与导航面板" width="900" />
 
-- [Vue 3](https://vuejs.org/) — Composition API + `<script setup>`
-- [Vuetify 3](https://vuetifyjs.com/) — Material Design 组件库
-- [CodeMirror 6](https://codemirror.net/) — 代码编辑器引擎
+> 想快速试用？进入 [在线 Diff 页面](https://awesome-json.wangyj.site/#/diff)，点击「加载示例数据」，再点击「开始对比」。
 
----
+## 快速开始
 
-## 🚀 快速开始
-
-### 环境要求
-
-- Node.js >= 18
-- npm >= 9
-
-### 安装与运行
+需要 **Node.js 18+** 和 npm。
 
 ```bash
-# 克隆仓库
 git clone https://github.com/EthonWang/awesome-json.git
 cd awesome-json
-
-# 安装依赖
-npm install
-
-# 启动开发服务器
+npm ci
 npm run dev
 ```
 
-### 构建部署
+按终端提示打开本地地址。常用命令：
 
-```bash
-# 构建生产版本
-npm run build
+| 命令              | 作用               |
+| :---------------- | :----------------- |
+| `npm run dev`     | 启动开发服务器     |
+| `npm run build`   | 构建到 `dist/`     |
+| `npm run preview` | 在本地预览构建结果 |
 
-# 预览构建产物
-npm run preview
-```
+项目基于 Vue 3、Vuetify 3、CodeMirror 6 和 Vite 5。构建结果是静态资源，可部署到静态站点服务。
 
-构建产物输出至 `dist/` 目录，可部署到任意静态服务器（Nginx、Vercel、Netlify、GitHub Pages 等）。
+## 操作小贴士
 
----
+- 编辑器内可使用 `Ctrl/⌘ + F` 搜索，`Ctrl/⌘ + H` 打开替换。
+- 查看 Diff 结果时，焦点不在输入框或按钮上，可以用 `N` / `→` 跳到下一处，`P` / `←` 返回上一处。
+- 修改对比输入后，点击「重新对比」刷新结果。
 
-## 📁 项目结构
+## 参与贡献
 
-```
-awesome-json/
-├── public/                       # 静态资源
-├── src/
-│   ├── App.vue                   # 根组件（导航栏 + 路由出口）
-│   ├── main.js                   # 应用入口
-│   ├── router/
-│   │   └── index.js              # 路由配置
-│   ├── components/
-│   │   ├── JsonEditor.vue        # CodeMirror 6 JSON 编辑器
-│   │   ├── JsonDiff.vue          # Diff 对比结果展示
-│   │   └── CustomSearchPanel.js  # 自定义搜索/替换面板
-│   ├── utils/
-│   │   └── jsonDiff.js           # JSON Diff 核心算法引擎
-│   └── views/
-│       ├── HomeView.vue          # 编辑器页面
-│       └── DiffView.vue          # Diff 对比页面
-├── index.html
-├── package.json
-└── vite.config.js
-```
-
----
-
-## 🤝 贡献
-
-欢迎提交 Issue 和 Pull Request！
-
-1. Fork 本仓库
-2. 创建特性分支 (`git checkout -b feature/amazing-feature`)
-3. 提交更改 (`git commit -m 'Add amazing feature'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 提交 Pull Request
-
----
-
-## 📄 License
-
-[MIT](LICENSE)
-
----
+欢迎通过 [Issue](https://github.com/EthonWang/awesome-json/issues) 报告问题或提出想法，也欢迎提交 Pull Request。修改前可先运行 `npm run build` 检查项目能否正常构建。
 
 <div align="center">
 
-**如果觉得有用，请给个 ⭐ Star 支持一下！**
+如果 Awesome JSON 对你有帮助，欢迎点个 ⭐ Star。
 
 </div>
