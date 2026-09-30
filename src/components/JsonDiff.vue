@@ -31,6 +31,13 @@ const filteredDiffTypes = computed(() => {
   if (showEquality.value) types.add(DiffType.EQUALITY)
   return types
 })
+const visibleDiffIndexes = computed(() => diffs.value.flatMap((diff, index) =>
+  filteredDiffTypes.value.has(diff.type) ? [index] : []))
+const currentVisiblePosition = computed(() => visibleDiffIndexes.value.indexOf(currentDiffIndex.value))
+
+watch(visibleDiffIndexes, (indexes) => {
+  if (!indexes.includes(currentDiffIndex.value)) currentDiffIndex.value = indexes[0] ?? -1
+})
 
 const missingCount = computed(() => diffs.value.filter(d => d.type === DiffType.MISSING).length)
 const typeCount = computed(() => diffs.value.filter(d => d.type === DiffType.TYPE).length)
@@ -104,22 +111,24 @@ function getIndent(depth) {
 }
 
 function handleLineClick(line) {
-  if (line.diffIndex !== null && line.diffIndex !== undefined) {
+  if (line.diffIndex !== null && line.diffIndex !== undefined && visibleDiffIndexes.value.includes(line.diffIndex)) {
     currentDiffIndex.value = line.diffIndex
     scrollToCurrentDiff()
   }
 }
 
 function gotoPrevDiff() {
-  if (currentDiffIndex.value > 0) {
-    currentDiffIndex.value--
+  const previous = visibleDiffIndexes.value[currentVisiblePosition.value - 1]
+  if (previous !== undefined) {
+    currentDiffIndex.value = previous
     scrollToCurrentDiff()
   }
 }
 
 function gotoNextDiff() {
-  if (currentDiffIndex.value < diffs.value.length - 1) {
-    currentDiffIndex.value++
+  const next = visibleDiffIndexes.value[currentVisiblePosition.value + 1]
+  if (next !== undefined) {
+    currentDiffIndex.value = next
     scrollToCurrentDiff()
   }
 }
@@ -140,7 +149,7 @@ function scrollToCurrentDiff() {
 
 function handleKeydown(event) {
   if (!props.visible) return
-  if (event.target.tagName === 'TEXTAREA' || event.target.tagName === 'INPUT') return
+  if (event.target.closest('textarea, input, button, [contenteditable="true"], [role="dialog"]')) return
 
   if (event.key === 'ArrowRight' || event.key === 'n' || event.key === 'N') {
     event.preventDefault()
@@ -191,12 +200,12 @@ onUnmounted(() => {
 
         <!-- 导航 -->
         <div class="panel-nav">
-          <v-btn icon size="small" variant="text" :disabled="currentDiffIndex <= 0" @click="gotoPrevDiff"
+          <v-btn icon size="small" variant="text" :disabled="currentVisiblePosition <= 0" @click="gotoPrevDiff"
             title="上一个差异 (P / ←)">
             <v-icon>mdi-chevron-up</v-icon>
           </v-btn>
-          <span class="panel-nav-label">{{ currentDiffIndex + 1 }} / {{ diffs.length }}</span>
-          <v-btn icon size="small" variant="text" :disabled="currentDiffIndex >= diffs.length - 1"
+          <span class="panel-nav-label">{{ currentVisiblePosition < 0 ? 0 : currentVisiblePosition + 1 }} / {{ visibleDiffIndexes.length }}</span>
+          <v-btn icon size="small" variant="text" :disabled="currentVisiblePosition >= visibleDiffIndexes.length - 1 || !visibleDiffIndexes.length"
             @click="gotoNextDiff" title="下一个差异 (N / →)">
             <v-icon>mdi-chevron-down</v-icon>
           </v-btn>
@@ -223,12 +232,13 @@ onUnmounted(() => {
         <v-divider class="my-2"></v-divider>
 
         <!-- 当前差异详情 -->
-        <div v-if="currentDiff" class="panel-detail">
+          <div v-if="currentDiff" class="panel-detail">
           <div class="panel-detail-path" :title="currentDiff.path">
             <code>{{ currentDiff.path }}</code>
           </div>
-          <div class="panel-detail-msg">{{ currentDiff.msg }}</div>
-        </div>
+            <div class="panel-detail-msg">{{ currentDiff.msg }}</div>
+          </div>
+          <div v-else class="panel-detail">当前筛选条件下没有差异</div>
 
         <v-divider class="my-2"></v-divider>
 
@@ -253,12 +263,16 @@ onUnmounted(() => {
     <div v-if="!errorMsg && leftLines.length > 0" class="diff-body">
       <div class="diff-pane" ref="leftCodeRef">
         <div class="diff-pane-header" style="justify-content: flex-end;">
-          Left
+          原始 JSON
           <v-icon size="small" class="ml-1">mdi-arrow-left-bold</v-icon>
         </div>
         <div class="code-block">
           <div v-for="(line, idx) in leftLines" :key="'l' + idx" class="code-line"
             :class="getLineClass(line)" :data-diff-index="line.diffIndex"
+            :tabindex="line.diffIndex != null && visibleDiffIndexes.includes(line.diffIndex) ? 0 : undefined"
+            :role="line.diffIndex != null && visibleDiffIndexes.includes(line.diffIndex) ? 'button' : undefined"
+            :aria-label="line.diffIndex != null && visibleDiffIndexes.includes(line.diffIndex) ? `查看差异：${diffs[line.diffIndex].msg}` : undefined"
+            @keydown.enter.prevent="handleLineClick(line)" @keydown.space.prevent="handleLineClick(line)"
             @click="handleLineClick(line)">
             <span class="line-number">{{ idx + 1 }}</span>
             <span class="line-content"><span class="indent">{{ getIndent(line.depth) }}</span>{{ line.text }}</span>
@@ -269,11 +283,15 @@ onUnmounted(() => {
       <div class="diff-pane" ref="rightCodeRef">
         <div class="diff-pane-header">
           <v-icon size="small" class="mr-1">mdi-arrow-right-bold</v-icon>
-          Right
+          目标 JSON
         </div>
         <div class="code-block">
           <div v-for="(line, idx) in rightLines" :key="'r' + idx" class="code-line"
             :class="getLineClass(line)" :data-diff-index="line.diffIndex"
+            :tabindex="line.diffIndex != null && visibleDiffIndexes.includes(line.diffIndex) ? 0 : undefined"
+            :role="line.diffIndex != null && visibleDiffIndexes.includes(line.diffIndex) ? 'button' : undefined"
+            :aria-label="line.diffIndex != null && visibleDiffIndexes.includes(line.diffIndex) ? `查看差异：${diffs[line.diffIndex].msg}` : undefined"
+            @keydown.enter.prevent="handleLineClick(line)" @keydown.space.prevent="handleLineClick(line)"
             @click="handleLineClick(line)">
             <span class="line-number">{{ idx + 1 }}</span>
             <span class="line-content"><span class="indent">{{ getIndent(line.depth) }}</span>{{ line.text }}</span>
@@ -417,6 +435,7 @@ onUnmounted(() => {
 .diff-line {
   cursor: pointer;
 }
+.diff-line:focus-visible { outline: 2px solid #1a73e8; outline-offset: -2px; }
 
 .diff-eq .line-content {
   background: rgba(255, 170, 0, 0.1);
@@ -453,9 +472,11 @@ onUnmounted(() => {
   }
 
   .diff-floating-panel {
-    width: 180px;
-    right: 12px;
-    top: 70px;
+    position: sticky;
+    top: 8px;
+    right: auto;
+    width: min(100%, 420px);
+    margin: 0 0 16px auto;
   }
 }
 </style>

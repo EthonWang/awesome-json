@@ -164,7 +164,7 @@ class CustomSearchPanel {
         top: 8px;
         right: 16px;
         z-index: 100;
-        width: 420px;
+        width: min(420px, calc(100vw - 32px));
         background: ${COLORS.bg};
         border: 1px solid ${COLORS.border};
         border-radius: 8px;

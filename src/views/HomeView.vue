@@ -18,6 +18,7 @@ function onTabWheel(e) {
 }
 
 const activeTab = computed(() => tabs.value.find(t => t.id === activeTabId.value))
+const activeCharacterCount = computed(() => activeTab.value?.content.length ?? 0)
 
 function setEditorRef(id, el) {
   if (el) {
@@ -133,17 +134,19 @@ function openSearch() {
           <div v-for="tab in tabs" :key="tab.id"
             class="tab-item d-flex align-center px-3"
             :class="{ 'tab-active': tab.id === activeTabId }"
+            role="tab" :aria-selected="tab.id === activeTabId" :aria-label="tab.title" tabindex="0"
+            @keydown.enter.self.prevent="activeTabId = tab.id" @keydown.space.self.prevent="activeTabId = tab.id"
             @click="activeTabId = tab.id">
             <v-icon size="14" class="mr-1" :color="tab.error ? 'error' : 'grey'">
               {{ tab.error ? 'mdi-alert-circle' : 'mdi-code-json' }}
             </v-icon>
             <span class="tab-title text-caption">{{ tab.title }}</span>
-            <v-icon v-if="tabs.length > 1" size="14" class="tab-close ml-2"
-              @click="closeTab(tab.id, $event)">mdi-close</v-icon>
+            <button v-if="tabs.length > 1" type="button" class="tab-close ml-2" :aria-label="`关闭 ${tab.title}`"
+              @click="closeTab(tab.id, $event)"><v-icon size="14">mdi-close</v-icon></button>
           </div>
-          <div class="tab-add d-flex align-center justify-center" @click="addTab">
+          <button type="button" class="tab-add d-flex align-center justify-center" aria-label="新建标签页" @click="addTab">
             <v-icon size="16">mdi-plus</v-icon>
-          </div>
+          </button>
         </div>
       </div>
 
@@ -200,7 +203,7 @@ function openSearch() {
       <!-- 底部状态栏 -->
       <div class="status-bar d-flex align-center px-3">
         <span class="text-caption text-medium-emphasis">
-          {{ tabs.length }} 个标签页
+          {{ tabs.length }} 个标签页 · {{ activeCharacterCount }} 字符
         </span>
         <v-spacer />
         <span class="text-caption text-medium-emphasis">JSON</span>
@@ -272,14 +275,19 @@ function openSearch() {
 }
 
 .tab-close {
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  padding: 2px;
   opacity: 0;
   transition: opacity 0.15s;
   border-radius: 4px;
 }
 
-.tab-item:hover .tab-close {
+.tab-item:hover .tab-close, .tab-close:focus-visible {
   opacity: 1;
 }
+.tab-item:focus-visible, .tab-add:focus-visible, .tab-close:focus-visible { outline: 2px solid #1a73e8; outline-offset: -2px; }
 
 .tab-close:hover {
   background-color: rgba(0, 0, 0, 0.1);

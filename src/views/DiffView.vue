@@ -38,7 +38,12 @@ const tipShow = ref(false)
 const tipMsg = ref('')
 
 const showDiff = ref(false)
+const diffStale = ref(false)
 const diffAnchorRef = ref(null)
+
+watch([leftJson, rightJson], () => {
+  if (showDiff.value) diffStale.value = true
+})
 
 function formatJson(side) {
   if (parseJson(side)) {
@@ -114,6 +119,7 @@ function cleanJson(side) {
 function startDiff() {
   if (parseJson('left') && parseJson('right')) {
     showDiff.value = false
+    diffStale.value = false
     nextTick(() => {
       showDiff.value = true
       nextTick(() => {
@@ -134,12 +140,16 @@ function closeDiff() {
     <!-- DIFF 按钮 -->
     <div class="mb-4">
       <v-btn prepend-icon="mdi-file-compare" color="indigo-darken-3" size="large" @click="startDiff">
-        DIFF
+        {{ showDiff ? '重新对比' : '开始对比' }}
       </v-btn>
       <v-btn variant="text" class="ml-2 text-decoration-underline" size="small" @click="loadSampleData">
         加载示例数据
       </v-btn>
     </div>
+    <v-alert v-if="showDiff && diffStale" type="warning" variant="tonal" density="compact" class="mb-4">
+      输入内容已变化，下面显示的是上一次对比结果。
+      <v-btn variant="text" size="small" @click="startDiff">重新对比</v-btn>
+    </v-alert>
 
     <v-row>
       <!-- 左侧 -->
@@ -156,7 +166,7 @@ function closeDiff() {
           </div>
         </v-row>
         <v-sheet rounded="lg">
-          <v-textarea label="左侧 JSON" placeholder="在此处输入 JSON" variant="outlined" rows="10" no-resize
+          <v-textarea label="原始 JSON" placeholder="在此处输入 JSON" variant="outlined" rows="10" no-resize
             v-model="leftJson"></v-textarea>
         </v-sheet>
       </v-col>
@@ -175,7 +185,7 @@ function closeDiff() {
           </div>
         </v-row>
         <v-sheet rounded="lg">
-          <v-textarea label="右侧 JSON" placeholder="在此处输入 JSON" variant="outlined" rows="10" no-resize
+          <v-textarea label="目标 JSON" placeholder="在此处输入 JSON" variant="outlined" rows="10" no-resize
             v-model="rightJson"></v-textarea>
         </v-sheet>
       </v-col>
