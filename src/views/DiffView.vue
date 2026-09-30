@@ -3,6 +3,8 @@ import { ref, nextTick, watch } from 'vue'
 import VueJsonPretty from 'vue-json-pretty'
 import 'vue-json-pretty/lib/styles.css'
 import JsonDiff from '@/components/JsonDiff.vue'
+import AppToast from '@/components/AppToast.vue'
+import { describeJsonError } from '@/utils/jsonError.js'
 
 const leftJson = ref('')
 const rightJson = ref('')
@@ -36,6 +38,13 @@ watch(jsonShowDialog, (val) => {
 
 const tipShow = ref(false)
 const tipMsg = ref('')
+const tipType = ref('info')
+
+function showTip(message, type = 'info') {
+  tipMsg.value = message
+  tipType.value = type
+  tipShow.value = true
+}
 
 const showDiff = ref(false)
 const diffStale = ref(false)
@@ -54,12 +63,16 @@ function formatJson(side) {
 
 function parseJson(side) {
   const value = side === 'left' ? leftJson.value : rightJson.value
+  const label = side === 'left' ? '原始 JSON' : '目标 JSON'
+  if (!value.trim()) {
+    showTip(`请先填写${label}。`, 'warning')
+    return false
+  }
   try {
     JSON.parse(value)
     return true
   } catch (e) {
-    tipMsg.value = String(e)
-    tipShow.value = true
+    showTip(describeJsonError(e, value, label), 'error')
     return false
   }
 }
@@ -95,11 +108,9 @@ function compressJson(side) {
 function copyJson(side) {
   const value = side === 'left' ? leftJson.value : rightJson.value
   navigator.clipboard.writeText(value).then(() => {
-    tipMsg.value = '已复制到剪贴板'
-    tipShow.value = true
-  }).catch(err => {
-    tipMsg.value = '复制失败: ' + err
-    tipShow.value = true
+    showTip(`已复制${side === 'left' ? '原始' : '目标'} JSON。`, 'success')
+  }).catch(() => {
+    showTip('复制失败，请检查浏览器的剪贴板权限后重试。', 'error')
   })
 }
 
@@ -154,17 +165,21 @@ function closeDiff() {
     <v-row>
       <!-- 左侧 -->
       <v-col cols="12" md="6">
-        <v-row class="mt-4 mb-2 ml-1">
-          <div>
-            <v-btn class="mr-1 mb-2" density="comfortable" @click="formatJson('left')">格式化</v-btn>
-            <v-btn class="mr-1 mb-2" density="comfortable" @click="openViewer('left')">可视化</v-btn>
-            <v-btn class="mr-1 mb-2" density="comfortable" @click="removeEscaping('left')">去转义</v-btn>
-            <v-btn class="mr-1 mb-2" density="comfortable" @click="addEscaping('left')">转义</v-btn>
-            <v-btn class="mr-1 mb-2" density="comfortable" @click="compressJson('left')">压缩</v-btn>
-            <v-btn class="mr-1 mb-2" color="secondary" density="comfortable" @click="copyJson('left')">复制</v-btn>
-            <v-btn class="mr-1 mb-2" color="red" density="comfortable" @click="cleanJson('left')">清空</v-btn>
-          </div>
-        </v-row>
+        <div class="diff-toolbar">
+          <v-btn-group variant="outlined" divided density="comfortable" class="diff-toolbar-group" aria-label="原始 JSON 格式操作">
+            <v-btn @click="formatJson('left')">格式化</v-btn>
+            <v-btn @click="compressJson('left')">压缩</v-btn>
+          </v-btn-group>
+          <v-btn-group variant="outlined" divided density="comfortable" class="diff-toolbar-group" aria-label="原始 JSON 查看与转义">
+            <v-btn @click="openViewer('left')">可视化</v-btn>
+            <v-btn @click="removeEscaping('left')">去转义</v-btn>
+            <v-btn @click="addEscaping('left')">转义</v-btn>
+          </v-btn-group>
+          <v-btn-group variant="outlined" divided density="comfortable" class="diff-toolbar-group" aria-label="原始 JSON 内容操作">
+            <v-btn color="secondary" @click="copyJson('left')">复制</v-btn>
+            <v-btn color="error" @click="cleanJson('left')">清空</v-btn>
+          </v-btn-group>
+        </div>
         <v-sheet rounded="lg">
           <v-textarea label="原始 JSON" placeholder="在此处输入 JSON" variant="outlined" rows="10" no-resize
             v-model="leftJson"></v-textarea>
@@ -173,17 +188,21 @@ function closeDiff() {
 
       <!-- 右侧 -->
       <v-col cols="12" md="6">
-        <v-row class="mt-4 mb-2 ml-1">
-          <div>
-            <v-btn class="mr-1 mb-2" density="comfortable" @click="formatJson('right')">格式化</v-btn>
-            <v-btn class="mr-1 mb-2" density="comfortable" @click="openViewer('right')">可视化</v-btn>
-            <v-btn class="mr-1 mb-2" density="comfortable" @click="removeEscaping('right')">去转义</v-btn>
-            <v-btn class="mr-1 mb-2" density="comfortable" @click="addEscaping('right')">转义</v-btn>
-            <v-btn class="mr-1 mb-2" density="comfortable" @click="compressJson('right')">压缩</v-btn>
-            <v-btn class="mr-1 mb-2" color="secondary" density="comfortable" @click="copyJson('right')">复制</v-btn>
-            <v-btn class="mr-1 mb-2" color="red" density="comfortable" @click="cleanJson('right')">清空</v-btn>
-          </div>
-        </v-row>
+        <div class="diff-toolbar">
+          <v-btn-group variant="outlined" divided density="comfortable" class="diff-toolbar-group" aria-label="目标 JSON 格式操作">
+            <v-btn @click="formatJson('right')">格式化</v-btn>
+            <v-btn @click="compressJson('right')">压缩</v-btn>
+          </v-btn-group>
+          <v-btn-group variant="outlined" divided density="comfortable" class="diff-toolbar-group" aria-label="目标 JSON 查看与转义">
+            <v-btn @click="openViewer('right')">可视化</v-btn>
+            <v-btn @click="removeEscaping('right')">去转义</v-btn>
+            <v-btn @click="addEscaping('right')">转义</v-btn>
+          </v-btn-group>
+          <v-btn-group variant="outlined" divided density="comfortable" class="diff-toolbar-group" aria-label="目标 JSON 内容操作">
+            <v-btn color="secondary" @click="copyJson('right')">复制</v-btn>
+            <v-btn color="error" @click="cleanJson('right')">清空</v-btn>
+          </v-btn-group>
+        </div>
         <v-sheet rounded="lg">
           <v-textarea label="目标 JSON" placeholder="在此处输入 JSON" variant="outlined" rows="10" no-resize
             v-model="rightJson"></v-textarea>
@@ -216,10 +235,26 @@ function closeDiff() {
   </v-dialog>
 
   <!-- 提示信息 -->
-  <v-snackbar v-model="tipShow" :timeout="2000">
-    {{ tipMsg }}
-  </v-snackbar>
+  <AppToast v-model="tipShow" :message="tipMsg" :type="tipType" />
 </template>
 
 <style scoped>
+.diff-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin: 8px 0;
+}
+
+.diff-toolbar-group {
+  box-shadow: none;
+  border-color: #d8dde5;
+}
+
+.diff-toolbar-group :deep(.v-btn) {
+  min-width: 0;
+  padding-inline: 10px;
+}
 </style>

@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { diffJson, formatJsonWithPaths, markDiffLines, DiffType } from '@/utils/jsonDiff.js'
+import { describeJsonError } from '@/utils/jsonError.js'
 
 const props = defineProps({
   leftJson: { type: String, default: '' },
@@ -23,6 +24,7 @@ const panelCollapsed = ref(false)
 
 const leftCodeRef = ref(null)
 const rightCodeRef = ref(null)
+const diffBodyRef = ref(null)
 
 const filteredDiffTypes = computed(() => {
   const types = new Set()
@@ -67,13 +69,13 @@ function performDiff() {
   try {
     leftObj = JSON.parse(props.leftJson)
   } catch (e) {
-    errorMsg.value = `左侧 JSON 解析失败: ${e.message}`
+    errorMsg.value = describeJsonError(e, props.leftJson, '原始 JSON')
     return
   }
   try {
     rightObj = JSON.parse(props.rightJson)
   } catch (e) {
-    errorMsg.value = `右侧 JSON 解析失败: ${e.message}`
+    errorMsg.value = describeJsonError(e, props.rightJson, '目标 JSON')
     return
   }
 
@@ -93,7 +95,7 @@ function performDiff() {
   }
 }
 
-function getLineClass(line) {
+function getLineClass(line, lines, index) {
   if (!line.diffType) return ''
   if (!filteredDiffTypes.value.has(line.diffType)) return 'diff-hidden'
 
@@ -102,6 +104,8 @@ function getLineClass(line) {
 
   if (currentDiff.value && line.diffIndex === currentDiffIndex.value) {
     classes.push('diff-selected')
+    if (lines[index - 1]?.diffIndex !== line.diffIndex) classes.push('diff-selected-start')
+    if (lines[index + 1]?.diffIndex !== line.diffIndex) classes.push('diff-selected-end')
   }
   return classes.join(' ')
 }
@@ -137,13 +141,33 @@ function scrollToCurrentDiff() {
   if (currentDiffIndex.value < 0) return
 
   nextTick(() => {
-    const leftEl = leftCodeRef.value?.querySelector(`.diff-line[data-diff-index="${currentDiffIndex.value}"]`)
-    const rightEl = rightCodeRef.value?.querySelector(`.diff-line[data-diff-index="${currentDiffIndex.value}"]`)
+    const selector = `.diff-line[data-diff-index="${currentDiffIndex.value}"]`
+    const leftPane = leftCodeRef.value
+    const rightPane = rightCodeRef.value
+    const leftMatch = leftPane?.querySelector(selector)
+    const rightMatch = rightPane?.querySelector(selector)
+    if (!leftMatch && !rightMatch) return
 
-    const target = leftEl || rightEl
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    // A missing property exists on only one side. Keep the other side near
+    // the same line when there is no exact highlighted counterpart.
+    const matchingRow = leftMatch || rightMatch
+    const rowIndex = Array.prototype.indexOf.call(matchingRow.parentElement.children, matchingRow)
+    const closestRow = (pane) => {
+      const rows = pane?.querySelectorAll('.code-line')
+      return rows?.[Math.min(rowIndex, rows.length - 1)]
     }
+
+    const scrollPaneToRow = (pane, row) => {
+      const scroller = pane?.querySelector('.code-block')
+      if (!scroller || !row) return
+      const rowTop = scroller.scrollTop + row.getBoundingClientRect().top - scroller.getBoundingClientRect().top
+      const centeredTop = rowTop - (scroller.clientHeight - row.clientHeight) / 2
+      scroller.scrollTo({ top: Math.max(0, centeredTop), behavior: 'smooth' })
+    }
+
+    scrollPaneToRow(leftPane, leftMatch || closestRow(leftPane))
+    scrollPaneToRow(rightPane, rightMatch || closestRow(rightPane))
+    diffBodyRef.value?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   })
 }
 
@@ -260,7 +284,7 @@ onUnmounted(() => {
     </div>
 
     <!-- 对比区域 -->
-    <div v-if="!errorMsg && leftLines.length > 0" class="diff-body">
+    <div v-if="!errorMsg && leftLines.length > 0" ref="diffBodyRef" class="diff-body">
       <div class="diff-pane" ref="leftCodeRef">
         <div class="diff-pane-header" style="justify-content: flex-end;">
           原始 JSON
@@ -268,7 +292,7 @@ onUnmounted(() => {
         </div>
         <div class="code-block">
           <div v-for="(line, idx) in leftLines" :key="'l' + idx" class="code-line"
-            :class="getLineClass(line)" :data-diff-index="line.diffIndex"
+            :class="getLineClass(line, leftLines, idx)" :data-diff-index="line.diffIndex"
             :tabindex="line.diffIndex != null && visibleDiffIndexes.includes(line.diffIndex) ? 0 : undefined"
             :role="line.diffIndex != null && visibleDiffIndexes.includes(line.diffIndex) ? 'button' : undefined"
             :aria-label="line.diffIndex != null && visibleDiffIndexes.includes(line.diffIndex) ? `查看差异：${diffs[line.diffIndex].msg}` : undefined"
@@ -287,7 +311,7 @@ onUnmounted(() => {
         </div>
         <div class="code-block">
           <div v-for="(line, idx) in rightLines" :key="'r' + idx" class="code-line"
-            :class="getLineClass(line)" :data-diff-index="line.diffIndex"
+            :class="getLineClass(line, rightLines, idx)" :data-diff-index="line.diffIndex"
             :tabindex="line.diffIndex != null && visibleDiffIndexes.includes(line.diffIndex) ? 0 : undefined"
             :role="line.diffIndex != null && visibleDiffIndexes.includes(line.diffIndex) ? 'button' : undefined"
             :aria-label="line.diffIndex != null && visibleDiffIndexes.includes(line.diffIndex) ? `查看差异：${diffs[line.diffIndex].msg}` : undefined"
@@ -452,9 +476,32 @@ onUnmounted(() => {
   color: #2e7d32;
 }
 
+.diff-selected {
+  position: relative;
+  background: #eaf2ff;
+}
+
+.diff-selected::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-left: 3px solid #2563c7;
+  border-right: 2px solid #2563c7;
+  pointer-events: none;
+}
+
+.diff-selected-start::after {
+  border-top: 2px solid #2563c7;
+}
+
+.diff-selected-end::after {
+  border-bottom: 2px solid #2563c7;
+}
+
 .diff-selected .line-content {
-  background: #bbdefb !important;
-  color: #1565c0 !important;
+  background: transparent !important;
+  color: #174c92 !important;
+  font-weight: 600;
 }
 
 .diff-hidden {

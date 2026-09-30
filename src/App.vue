@@ -60,6 +60,14 @@ onBeforeUnmount(() => {
 </template>
 
 <style>
+:root {
+  --app-ui-font: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif;
+}
+body,
+.v-application,
+.v-application :is(button, input, textarea, .v-btn, .v-field, .v-chip, .v-alert, .v-list-item, .v-snackbar) {
+  font-family: var(--app-ui-font);
+}
 .json-viewer-tree {
   padding: 12px;
 }

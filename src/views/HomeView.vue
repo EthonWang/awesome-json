@@ -1,9 +1,18 @@
 <script setup>
 import { ref, computed, nextTick } from 'vue'
 import JsonEditor from '@/components/JsonEditor.vue'
+import AppToast from '@/components/AppToast.vue'
+import { describeJsonError } from '@/utils/jsonError.js'
 
 const tipShow = ref(false)
 const tipMsg = ref('')
+const tipType = ref('info')
+
+function showTip(message, type = 'info') {
+  tipMsg.value = message
+  tipType.value = type
+  tipShow.value = true
+}
 
 let tabIdCounter = 1
 const tabs = ref([{ id: tabIdCounter, title: 'Tab 1', content: '', error: '' }])
@@ -62,8 +71,7 @@ function formatJson() {
   if (editor) {
     editor.formatJson()
     if (activeTab.value?.error) {
-      tipMsg.value = 'JSON 格式错误: ' + activeTab.value.error
-      tipShow.value = true
+      showTip(describeJsonError(activeTab.value.error, activeTab.value.content), 'error')
     }
   }
 }
@@ -73,8 +81,7 @@ function compressJson() {
   if (editor) {
     editor.compressJson()
     if (activeTab.value?.error) {
-      tipMsg.value = 'JSON 格式错误: ' + activeTab.value.error
-      tipShow.value = true
+      showTip(describeJsonError(activeTab.value.error, activeTab.value.content), 'error')
     }
   }
 }
@@ -84,12 +91,13 @@ function validateJson() {
   if (editor) {
     editor.validateJson()
     nextTick(() => {
-      if (activeTab.value?.error) {
-        tipMsg.value = 'JSON 格式错误: ' + activeTab.value.error
+      if (!activeTab.value?.content.trim()) {
+        showTip('请先输入 JSON，再进行校验。', 'warning')
+      } else if (activeTab.value?.error) {
+        showTip(describeJsonError(activeTab.value.error, activeTab.value.content), 'error')
       } else {
-        tipMsg.value = 'JSON 合法'
+        showTip('JSON 格式正确，可以继续使用。', 'success')
       }
-      tipShow.value = true
     })
   }
 }
@@ -98,8 +106,9 @@ function copyJson() {
   const editor = getActiveEditor()
   if (editor) {
     editor.copyJson().then(() => {
-      tipMsg.value = '已复制到剪贴板'
-      tipShow.value = true
+      showTip('已复制当前标签页的内容。', 'success')
+    }).catch(() => {
+      showTip('复制失败，请检查浏览器的剪贴板权限后重试。', 'error')
     })
   }
 }
@@ -176,8 +185,9 @@ function openSearch() {
 
         <v-spacer />
 
-        <v-chip v-if="activeTab?.error" color="error" variant="tonal" size="x-small" prepend-icon="mdi-alert-circle" class="ml-2">
-          {{ activeTab.error }}
+        <v-chip v-if="activeTab?.error" color="error" variant="tonal" size="x-small" prepend-icon="mdi-alert-circle" class="ml-2"
+          :title="describeJsonError(activeTab.error, activeTab.content)">
+          JSON 格式有误
         </v-chip>
         <v-chip v-else-if="activeTab?.content?.trim()" color="success" variant="tonal" size="x-small" prepend-icon="mdi-check-circle" class="ml-2">
           JSON 合法
@@ -210,9 +220,7 @@ function openSearch() {
       </div>
     </v-card>
 
-    <v-snackbar v-model="tipShow" :timeout="2000">
-      {{ tipMsg }}
-    </v-snackbar>
+    <AppToast v-model="tipShow" :message="tipMsg" :type="tipType" />
   </v-main>
 </template>
 

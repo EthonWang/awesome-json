@@ -95,7 +95,8 @@ const COLORS = {
   shadow: '0 4px 12px rgba(0,0,0,0.12)',
 }
 
-const FONT = "12px Monaco, Menlo, Consolas, 'Courier New', monospace"
+const UI_FONT_FAMILY = "-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif"
+const FONT = `12px ${UI_FONT_FAMILY}`
 
 class CustomSearchPanel {
   constructor(view) {
@@ -626,7 +627,7 @@ class CustomSearchPanel {
         border-radius: 4px;
         background: transparent;
         color: ${COLORS.toggleColor};
-        font: bold 11px ${FONT.split(',')[0]}, monospace;
+        font: bold 11px ${UI_FONT_FAMILY};
         cursor: pointer;
         display: flex;
         align-items: center;
