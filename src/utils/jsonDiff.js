@@ -135,7 +135,7 @@ function diffArray(left, right, path, diffs) {
  */
 export function formatJsonWithPaths(data, sortKeys = true) {
   const lines = []
-  formatValue(data, '', '/', lines, 0, sortKeys, false)
+  formatValue(data, '', '/', lines, 0, sortKeys, true)
   return lines
 }
 

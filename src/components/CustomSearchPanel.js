@@ -58,14 +58,14 @@ export const searchPanelTheme = EditorView.baseTheme({
   },
   // 搜索匹配高亮 — 所有匹配项（醒目的橙黄色背景）
   '.cm-searchMatch': {
-    backgroundColor: '#FFD54F',
+    backgroundColor: '#ffe1a8',
     borderRadius: '2px',
-    boxShadow: '0 0 0 1px #F9A825',
+    boxShadow: '0 0 0 1px #d5a552',
   },
   // 当前选中的匹配项（更醒目的橙色背景 + 加粗边框）
   '.cm-searchMatch-selected': {
-    backgroundColor: '#FF9800',
-    boxShadow: '0 0 0 2px #E65100',
+    backgroundColor: '#f5ba68',
+    boxShadow: '0 0 0 2px #bd7a2c',
   },
 })
 
@@ -78,21 +78,21 @@ export function createSearchPanel(view) {
 
 // ─── 样式常量 ───
 const COLORS = {
-  bg: '#F8F8F8',
-  border: '#E0E0E0',
-  inputBg: '#FFFFFF',
-  inputBorder: '#D0D0D0',
-  inputFocusBorder: '#1a73e8',
-  inputErrorBorder: '#E53935',
-  btnHoverBg: '#E8E8E8',
-  toggleActiveBg: '#1a73e8',
+  bg: '#FFFFFF',
+  border: '#D2E0E9',
+  inputBg: '#F8FBFD',
+  inputBorder: '#CBDAE3',
+  inputFocusBorder: '#3C67CA',
+  inputErrorBorder: '#BD5962',
+  btnHoverBg: '#EDF4F8',
+  toggleActiveBg: '#3C67CA',
   toggleActiveColor: '#FFFFFF',
-  toggleColor: '#666666',
-  textPrimary: '#333333',
-  textSecondary: '#666666',
-  textMuted: '#999999',
+  toggleColor: '#496578',
+  textPrimary: '#183448',
+  textSecondary: '#587181',
+  textMuted: '#8298A6',
   countBg: 'transparent',
-  shadow: '0 4px 12px rgba(0,0,0,0.12)',
+  shadow: '0 12px 32px rgba(24,54,75,0.15)',
 }
 
 const UI_FONT_FAMILY = "-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif"
