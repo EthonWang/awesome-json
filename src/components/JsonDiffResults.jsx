@@ -124,6 +124,8 @@ export default function JsonDiffResults({ snapshot, onClose, showToast, active =
       hasDiff ? 'diff-' + diffs[line.diffIndex].kind : '',
       hasDiff && !enabled ? 'muted' : '',
       selectedLine ? 'selected' : '',
+      selectedLine && lines[index - 1]?.diffIndex !== selected ? 'selected-start' : '',
+      selectedLine && lines[index + 1]?.diffIndex !== selected ? 'selected-end' : '',
     ].filter(Boolean).join(' ')
     return (
       <div
@@ -154,7 +156,7 @@ export default function JsonDiffResults({ snapshot, onClose, showToast, active =
 
   return (
     <section ref={sectionRef} className="result-workspace" aria-label="JSON 差异结果">
-      <div className="workspace">
+      <div className={'workspace' + (indexOpen ? ' index-open' : '')}>
         <div className="code-surface">
           <div className="surface-header">
             <div className="result-heading"><span className="pulse" /><strong>对比完成</strong><span>{diffs.length ? '发现 ' + diffs.length + ' 处差异' : '两侧 JSON 语义完全相同'}</span>{diffs[selected] && <span className="current-path">当前：{diffs[selected].path}</span>}</div>

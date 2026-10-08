@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
 import JsonView from '@uiw/react-json-view'
-import { Braces, Clipboard, Eye, FileJson, GitCompare, Pencil, Sparkles, Trash2, X } from 'lucide-react'
+import { Braces, ChevronDown, ChevronUp, Clipboard, Eye, FileJson, GitCompare, Pencil, Sparkles, Trash2, X } from 'lucide-react'
 import CodeEditor from '../components/CodeEditor.jsx'
 import JsonDiffResults from '../components/JsonDiffResults.jsx'
 import { parseJsonInput } from '../utils/jsonActions.js'
@@ -34,8 +34,10 @@ export default function DiffPage({ showToast, onDirty, onOpenEditor, active = tr
   const [snapshot, setSnapshot] = useState(null)
   const [stale, setStale] = useState(false)
   const [viewer, setViewer] = useState(null)
+  const [inputCollapsed, setInputCollapsed] = useState(false)
   const resultRef = useRef(null)
   const expandedInput = !snapshot || (!sources.left.trim() && !sources.right.trim())
+  const emptyInputs = !sources.left.trim() && !sources.right.trim()
 
   const setSide = (side, value, user = true) => {
     setSources((current) => ({ ...current, [side]: value }))
@@ -71,6 +73,7 @@ export default function DiffPage({ showToast, onDirty, onOpenEditor, active = tr
   const clearAll = () => {
     setSources({ left: '', right: '' })
     setSnapshot(null)
+    setInputCollapsed(false)
     setStale(false)
     onDirty()
   }
@@ -97,16 +100,21 @@ export default function DiffPage({ showToast, onDirty, onOpenEditor, active = tr
 
   return (
     <>
-      <div className={'source-workspace' + (expandedInput ? ' uncompared' : '')}>
+      <h1 className="sr-only">JSON Diff</h1>
+      <div className={'source-workspace' + (expandedInput ? ' uncompared' : '') + (emptyInputs ? ' empty-inputs' : '')}>
         <div className="source-workspace-head">
-          <h1>JSON Diff</h1>
           <div className="source-workspace-actions">
             <button className="btn" type="button" onClick={loadSample}><Sparkles size={15} />载入示例</button>
-            <button className="btn" type="button" onClick={clearAll}><Trash2 size={15} />清空两侧</button>
+            {snapshot && <button className="btn" type="button" aria-expanded={!inputCollapsed} aria-controls="diff-source-inputs" onClick={() => setInputCollapsed((collapsed) => !collapsed)}>
+              {inputCollapsed ? <ChevronDown size={15} /> : <ChevronUp size={15} />}{inputCollapsed ? '展开输入' : '收起输入'}
+            </button>}
+          </div>
+          <div className="source-workspace-actions">
+            <button className="btn destructive" type="button" onClick={clearAll}><Trash2 size={15} />清空两侧</button>
             <button className="btn primary" type="button" onClick={compare}><GitCompare size={16} />{snapshot ? '重新对比' : '开始对比'}</button>
           </div>
         </div>
-        <div className="source-grid">
+        <div className="source-grid" id="diff-source-inputs" hidden={Boolean(snapshot) && inputCollapsed}>
           <SourcePane side="left" value={sources.left} onChange={setSide} onAction={onAction} active={active} />
           <SourcePane side="right" value={sources.right} onChange={setSide} onAction={onAction} active={active} />
         </div>
@@ -119,7 +127,7 @@ export default function DiffPage({ showToast, onDirty, onOpenEditor, active = tr
             snapshot={snapshot}
             active={active}
             showToast={showToast}
-            onClose={() => { setSnapshot(null); setStale(false) }}
+            onClose={() => { setSnapshot(null); setStale(false); setInputCollapsed(false) }}
           />
         ) : (sources.left.trim() || sources.right.trim()) ? (
           <div className="result-placeholder"><FileJson size={34} strokeWidth={1.4} /><h2>暂无对比结果</h2><button className="btn primary" type="button" onClick={compare}>开始对比</button></div>
@@ -129,22 +137,26 @@ export default function DiffPage({ showToast, onDirty, onOpenEditor, active = tr
       <Dialog.Root open={Boolean(viewer)} onOpenChange={(open) => { if (!open) setViewer(null) }}>
         <Dialog.Portal>
           <Dialog.Overlay className="dialog-overlay" />
-          <Dialog.Content className="viewer-dialog">
+          <Dialog.Content className="viewer-dialog" aria-describedby={undefined}>
             <div className="viewer-head"><Dialog.Title><FileJson size={19} />{viewer?.label} · 可视化</Dialog.Title><Dialog.Close className="icon-btn" aria-label="关闭可视化"><X size={18} /></Dialog.Close></div>
-            <Dialog.Description className="viewer-description">展开或收起节点以查看 JSON 结构。</Dialog.Description>
             <div className="viewer-content">
               {viewer && viewer.data !== null && typeof viewer.data === 'object'
                 ? <JsonView
                     className="json-viewer"
                     value={viewer.data}
-                    style={{ lineHeight: '26px' }}
+                    style={{ fontSize: '14px', lineHeight: '26px' }}
                     indentWidth={20}
                     collapsed={5}
                     displayDataTypes={false}
                     shortenTextAfterLength={0}
                     highlightUpdates={false}
                     enableClipboard
-                  />
+                  >
+                    <JsonView.CountInfo
+                      style={{ fontStyle: 'normal', fontSize: '13px' }}
+                      render={(props) => <span {...props}>{props['data-length']} 项</span>}
+                    />
+                  </JsonView>
                 : <pre>{JSON.stringify(viewer?.data, null, 2)}</pre>}
             </div>
           </Dialog.Content>
