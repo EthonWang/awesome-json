@@ -21,11 +21,11 @@
     "@radix-ui/react-dialog": "^1.1.23",
     "@radix-ui/react-tabs": "^1.1.21",
     "@uiw/react-codemirror": "^4.25.12",
+    "@uiw/react-json-view": "^2.0.0-alpha.44",
     "codemirror": "^6.0.2",
     "lucide-react": "^1.49.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
-    "react-json-view-lite": "^2.5.0",
     "react-router-dom": "^7.18.4"
   },
   "devDependencies": {

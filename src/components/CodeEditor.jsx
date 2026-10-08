@@ -40,7 +40,8 @@ const editorTheme = EditorView.theme({
   '.cm-line': { padding: '0 16px 0 8px' },
   '.cm-gutters': { backgroundColor: '#f6f9fb', color: '#91a8b5', border: 'none', paddingLeft: '3px' },
   '.cm-activeLineGutter': { backgroundColor: '#eaf0f5', color: '#456980' },
-  '.cm-activeLine': { backgroundColor: '#f0f6fb' },
+  // Selection is drawn underneath the content, so keep the line tint translucent.
+  '.cm-activeLine': { backgroundColor: 'rgba(49, 91, 190, 0.06)' },
   '.cm-selectionBackground, &.cm-focused .cm-selectionBackground': { backgroundColor: '#c7dcf6 !important' },
   '.cm-cursor': { borderLeftColor: '#315bbe' },
   '.cm-placeholder': { color: '#a4b5bf' },

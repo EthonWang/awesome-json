@@ -1,15 +1,23 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
 import { AlertCircle, Braces, CheckCircle2, GitCompare, Info, X } from 'lucide-react'
 import EditorPage from './pages/EditorPage.jsx'
 import DiffPage from './pages/DiffPage.jsx'
 
 export default function App() {
   const location = useLocation()
+  const navigate = useNavigate()
+  const editorRef = useRef(null)
   const onDiff = location.pathname === '/diff'
   const [notice, setNotice] = useState(null)
   const dirtyRef = useRef(false)
   const toastTimer = useRef(null)
+
+  const openInEditor = (content) => {
+    editorRef.current.openTab(content)
+    dirtyRef.current = true
+    navigate('/')
+  }
 
   const showToast = useCallback((message, type = 'info') => {
     clearTimeout(toastTimer.current)
@@ -41,8 +49,8 @@ export default function App() {
           </nav>
         </header>
         <main>
-          <div hidden={onDiff}><EditorPage active={!onDiff} showToast={showToast} onDirty={() => { dirtyRef.current = true }} /></div>
-          <div hidden={!onDiff}><DiffPage active={onDiff} showToast={showToast} onDirty={() => { dirtyRef.current = true }} /></div>
+          <div hidden={onDiff}><EditorPage ref={editorRef} active={!onDiff} showToast={showToast} onDirty={() => { dirtyRef.current = true }} /></div>
+          <div hidden={!onDiff}><DiffPage active={onDiff} showToast={showToast} onOpenEditor={openInEditor} onDirty={() => { dirtyRef.current = true }} /></div>
         </main>
       </div>
       {notice && <div className={'toast ' + notice.type} role="status" aria-live="polite">

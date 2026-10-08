@@ -1,11 +1,10 @@
 import { useRef, useState } from 'react'
 import * as Dialog from '@radix-ui/react-dialog'
-import { JsonView, defaultStyles } from 'react-json-view-lite'
-import 'react-json-view-lite/dist/index.css'
-import { Braces, Clipboard, Eye, FileJson, GitCompare, Minimize2, Sparkles, Trash2, X } from 'lucide-react'
+import JsonView from '@uiw/react-json-view'
+import { Braces, Clipboard, Eye, FileJson, GitCompare, Pencil, Sparkles, Trash2, X } from 'lucide-react'
 import CodeEditor from '../components/CodeEditor.jsx'
 import JsonDiffResults from '../components/JsonDiffResults.jsx'
-import { addEscaping, parseJsonInput, removeEscaping } from '../utils/jsonActions.js'
+import { parseJsonInput } from '../utils/jsonActions.js'
 import { sampleLeft, sampleLeftText, sampleRight, sampleRightText } from '../utils/sampleData.js'
 
 function SourcePane({ side, value, onChange, active, onAction }) {
@@ -13,27 +12,24 @@ function SourcePane({ side, value, onChange, active, onAction }) {
   return (
     <section className="source-pane" aria-label={label}>
       <div className="pane-head">
-        <span className="file-emblem">{'{ }'}</span>
-        <strong>{label}</strong>
-      </div>
-      <div className="source-toolbar">
-        <button className="tiny-btn" type="button" onClick={() => onAction(side, 'format')}><Braces size={14} />格式化</button>
-        <button className="tiny-btn" type="button" onClick={() => onAction(side, 'compress')}><Minimize2 size={14} />压缩</button>
-        <span className="tool-divider" aria-hidden="true" />
-        <button className="tiny-btn" type="button" onClick={() => onAction(side, 'view')}><Eye size={14} />可视化</button>
-        <button className="tiny-btn" type="button" onClick={() => onAction(side, 'copy')}><Clipboard size={14} />复制</button>
-        <span className="tool-divider" aria-hidden="true" />
-        <button className="tiny-btn" type="button" onClick={() => onAction(side, 'unescape')}>去转义</button>
-        <button className="tiny-btn" type="button" onClick={() => onAction(side, 'escape')}>转义</button>
-        <span className="tool-divider" aria-hidden="true" />
-        <button className="tiny-btn destructive" type="button" onClick={() => onAction(side, 'clear')}><Trash2 size={14} />清空</button>
+        <div className="source-pane-title">
+          <span className="file-emblem">{'{ }'}</span>
+          <strong>{label}</strong>
+        </div>
+        <div className="source-toolbar">
+          <button className="tiny-btn" type="button" onClick={() => onAction(side, 'format')}><Braces size={14} />格式化</button>
+          <button className="tiny-btn" type="button" onClick={() => onAction(side, 'view')}><Eye size={14} />可视化</button>
+          <button className="tiny-btn" type="button" onClick={() => onAction(side, 'copy')}><Clipboard size={14} />复制</button>
+          <button className="tiny-btn" type="button" onClick={() => onAction(side, 'edit')}><Pencil size={14} />编辑</button>
+          <button className="tiny-btn destructive" type="button" onClick={() => onAction(side, 'clear')}><Trash2 size={14} />清空</button>
+        </div>
       </div>
       <div className="source-editor"><CodeEditor value={value} onChange={(text) => onChange(side, text)} active={active} placeholder={'在此处输入' + label} /></div>
     </section>
   )
 }
 
-export default function DiffPage({ showToast, onDirty, active = true }) {
+export default function DiffPage({ showToast, onDirty, onOpenEditor, active = true }) {
   const [sources, setSources] = useState({ left: '', right: '' })
   const [snapshot, setSnapshot] = useState(null)
   const [stale, setStale] = useState(false)
@@ -83,8 +79,7 @@ export default function DiffPage({ showToast, onDirty, active = true }) {
     const label = side === 'left' ? '原始 JSON' : '目标 JSON'
     const text = sources[side]
     if (action === 'clear') { setSide(side, ''); return }
-    if (action === 'escape') { setSide(side, addEscaping(text)); return }
-    if (action === 'unescape') { setSide(side, removeEscaping(text)); return }
+    if (action === 'edit') { onOpenEditor(text); return }
     if (action === 'copy') {
       try {
         await navigator.clipboard.writeText(text)
@@ -97,7 +92,6 @@ export default function DiffPage({ showToast, onDirty, active = true }) {
     const parsed = parseSide(side)
     if (!parsed.ok) return
     if (action === 'format') setSide(side, JSON.stringify(parsed.value, null, 2))
-    if (action === 'compress') setSide(side, JSON.stringify(parsed.value))
     if (action === 'view') setViewer({ label, data: parsed.value })
   }
 
@@ -140,7 +134,17 @@ export default function DiffPage({ showToast, onDirty, active = true }) {
             <Dialog.Description className="viewer-description">展开或收起节点以查看 JSON 结构。</Dialog.Description>
             <div className="viewer-content">
               {viewer && viewer.data !== null && typeof viewer.data === 'object'
-                ? <JsonView data={viewer.data} style={defaultStyles} shouldExpandNode={(level) => level < 5} />
+                ? <JsonView
+                    className="json-viewer"
+                    value={viewer.data}
+                    style={{ lineHeight: '26px' }}
+                    indentWidth={20}
+                    collapsed={5}
+                    displayDataTypes={false}
+                    shortenTextAfterLength={0}
+                    highlightUpdates={false}
+                    enableClipboard
+                  />
                 : <pre>{JSON.stringify(viewer?.data, null, 2)}</pre>}
             </div>
           </Dialog.Content>

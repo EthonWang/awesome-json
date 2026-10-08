@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import * as Tabs from '@radix-ui/react-tabs'
 import { Braces, Check, Clipboard, FileJson, Minimize2, Plus, Search, Sparkles, Trash2, X } from 'lucide-react'
 import CodeEditor from '../components/CodeEditor.jsx'
 import { addEscaping, jsonError, parseJsonInput, removeEscaping } from '../utils/jsonActions.js'
 
-export default function EditorPage({ showToast, onDirty, active = true }) {
+export default function EditorPage({ ref, showToast, onDirty, active = true }) {
   const [tabs, setTabs] = useState([{ id: 1, title: 'Tab 1', content: '', error: '', cursor: { line: 1, column: 1 } }])
   const [activeId, setActiveId] = useState(1)
   const [autoFormat, setAutoFormat] = useState(true)
@@ -64,11 +64,13 @@ export default function EditorPage({ showToast, onDirty, active = true }) {
     }, 800))
   }
 
-  const addTab = () => {
+  const addTab = (content = '') => {
     const id = nextId.current++
-    setTabs((current) => [...current, { id, title: 'Tab ' + id, content: '', error: '', cursor: { line: 1, column: 1 } }])
+    setTabs((current) => [...current, { id, title: 'Tab ' + id, content, error: jsonError(content), cursor: { line: 1, column: 1 } }])
     setActiveId(id)
   }
+
+  useImperativeHandle(ref, () => ({ openTab: addTab }))
 
   const closeTab = (id) => {
     if (tabs.length <= 1) return
@@ -127,7 +129,7 @@ export default function EditorPage({ showToast, onDirty, active = true }) {
                   </div>
                 ))}
               </Tabs.List>
-              <button className="editor-add" type="button" aria-label="新建标签页" title="新建标签页" onClick={addTab}><Plus size={18} /></button>
+              <button className="editor-add" type="button" aria-label="新建标签页" title="新建标签页" onClick={() => addTab()}><Plus size={18} /></button>
             </div>
           </Tabs.Root>
           <div className="editor-toolbar">
