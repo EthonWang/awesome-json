@@ -1,0 +1,24 @@
+.json-viewer {
+  --w-rjv-font-family: var(--mono);
+  --w-rjv-background-color: #fff;
+  --w-rjv-color: var(--syntax-text);
+  --w-rjv-key-string: var(--syntax-key);
+  --w-rjv-key-number: var(--syntax-key);
+  --w-rjv-line-color: #e6eef3;
+  --w-rjv-arrow-color: var(--muted);
+  --w-rjv-info-color: var(--muted);
+  --w-rjv-curlybraces-color: var(--syntax-punctuation);
+  --w-rjv-brackets-color: var(--syntax-punctuation);
+  --w-rjv-colon-color: var(--syntax-punctuation);
+  --w-rjv-quotes-color: var(--syntax-key);
+  --w-rjv-quotes-string-color: var(--syntax-string);
+  --w-rjv-type-string-color: var(--syntax-string);
+  --w-rjv-type-url-color: var(--syntax-string);
+  --w-rjv-type-int-color: var(--syntax-number);
+  --w-rjv-type-float-color: var(--syntax-number);
+  --w-rjv-type-boolean-color: var(--syntax-literal);
+  --w-rjv-type-null-color: var(--syntax-literal);
+  --w-rjv-ellipsis-color: var(--muted);
+  --w-rjv-copied-color: var(--muted);
+  --w-rjv-copied-success-color: var(--success);
+}

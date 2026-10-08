@@ -1,0 +1,115 @@
+.tok-key {
+  color: var(--syntax-key);
+}
+.tok-string {
+  color: var(--syntax-string);
+}
+.tok-number {
+  color: var(--syntax-number);
+}
+.tok-bool {
+  color: var(--syntax-literal);
+}
+.diff-code-line[role="button"] {
+  @apply cursor-pointer;
+}
+.diff-code-line[role="button"]:hover {
+  filter: brightness(0.985);
+}
+.diff-code-line:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: -2px;
+}
+.result-workspace {
+  scroll-margin-top: 14px;
+  --diff-added: #137158;
+  --diff-added-bg: #e4f5ed;
+  --diff-removed: #a5444d;
+  --diff-removed-bg: #fcebed;
+  --diff-changed: #875817;
+  --diff-changed-bg: #fff2dc;
+  --diff-type: #7558a6;
+  --diff-type-bg: #f1ebfa;
+}
+.result-workspace .diff-code-line.selected {
+  @apply relative;
+  z-index: 1;
+  box-shadow: none;
+  font-weight: 600;
+}
+.result-workspace .diff-code-line.selected::after {
+  @apply absolute pointer-events-none;
+  content: "";
+  inset: 0;
+  border-left: 2px solid #3269d0;
+  border-right: 2px solid #3269d0;
+}
+.result-workspace .diff-code-line.selected-start::after {
+  border-top: 2px solid #3269d0;
+}
+.result-workspace .diff-code-line.selected-end::after {
+  border-bottom: 2px solid #3269d0;
+}
+.result-workspace .diff-code-line.diff-added {
+  background: var(--diff-added-bg);
+  border-left-color: var(--diff-added);
+}
+.result-workspace .diff-code-line.diff-removed {
+  background: var(--diff-removed-bg);
+  border-left-color: var(--diff-removed);
+}
+.result-workspace .diff-code-line.diff-changed {
+  background: var(--diff-changed-bg);
+  border-left-color: var(--diff-changed);
+}
+.result-workspace .diff-code-line.diff-type {
+  background: var(--diff-type-bg);
+  border-left-color: var(--diff-type);
+}
+.result-workspace .bar.diff-added {
+  background: var(--diff-added);
+}
+.result-workspace .bar.diff-removed {
+  background: var(--diff-removed);
+}
+.result-workspace .bar.diff-changed {
+  background: var(--diff-changed);
+}
+.result-workspace .bar.diff-type {
+  background: var(--diff-type);
+}
+.result-workspace .diff-kind.diff-added {
+  color: var(--diff-added);
+  background: var(--diff-added-bg);
+}
+.result-workspace .diff-kind.diff-removed {
+  color: var(--diff-removed);
+  background: var(--diff-removed-bg);
+}
+.result-workspace .diff-kind.diff-changed {
+  color: var(--diff-changed);
+  background: var(--diff-changed-bg);
+}
+.result-workspace .diff-kind.diff-type {
+  color: var(--diff-type);
+  background: var(--diff-type-bg);
+}
+.result-workspace .filter.diff-added:not(.active) {
+  color: var(--diff-added);
+}
+.result-workspace .filter.diff-removed:not(.active) {
+  color: var(--diff-removed);
+}
+.result-workspace .filter.diff-changed:not(.active) {
+  color: var(--diff-changed);
+}
+.result-workspace .filter.diff-type:not(.active) {
+  color: var(--diff-type);
+}
+
+/* Filtering takes precedence over the semantic difference color. */
+.result-workspace .diff-code-line.muted {
+  background: transparent;
+  border-left-color: transparent;
+  opacity: 0.35;
+}

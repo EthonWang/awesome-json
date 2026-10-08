@@ -1,5 +1,14 @@
-import { EditorView } from '@codemirror/view'
-import { StateEffect } from '@codemirror/state'
+import {
+  ArrowUp,
+  ArrowDown,
+  ChevronRight,
+  X,
+  Replace,
+  ReplaceAll,
+} from "lucide-react";
+import { createTooltipControl } from "./ui/tooltip-control.jsx";
+import { EditorView } from "@codemirror/view";
+import { StateEffect } from "@codemirror/state";
 import {
   SearchQuery,
   setSearchQuery,
@@ -10,21 +19,21 @@ import {
   replaceAll,
   closeSearchPanel,
   openSearchPanel,
-} from '@codemirror/search'
+} from "@codemirror/search";
 
 /**
  * 自定义 StateEffect：通知面板展开替换行
  */
-const openReplaceEffect = StateEffect.define()
+const openReplaceEffect = StateEffect.define();
 
 /**
  * Cmd+H 命令：打开搜索面板并展开替换行
  */
 export function openSearchPanelWithReplace(view) {
-  openSearchPanel(view)
+  openSearchPanel(view);
   // 发送 effect 通知面板展开替换
-  view.dispatch({ effects: openReplaceEffect.of(true) })
-  return true
+  view.dispatch({ effects: openReplaceEffect.of(true) });
+  return true;
 }
 
 /**
@@ -32,100 +41,185 @@ export function openSearchPanelWithReplace(view) {
  */
 export const searchPanelTheme = EditorView.baseTheme({
   // 让编辑器外层作为定位上下文
-  '&': {
-    position: 'relative',
+  "&": {
+    position: "relative",
   },
   // 顶部 panel 容器透明化，不占空间
-  '.cm-panels.cm-panels-top': {
-    position: 'absolute',
-    top: '0',
-    right: '0',
-    left: '0',
-    zIndex: '100',
-    borderBottom: 'none',
-    backgroundColor: 'transparent',
-    pointerEvents: 'none',
+  ".cm-panels.cm-panels-top": {
+    position: "absolute",
+    top: "0",
+    right: "0",
+    left: "0",
+    zIndex: "100",
+    borderBottom: "none",
+    backgroundColor: "transparent",
+    pointerEvents: "none",
   },
-  '.cm-panels.cm-panels-top .cm-panel': {
-    pointerEvents: 'auto',
+  ".cm-panels.cm-panels-top .cm-panel": {
+    pointerEvents: "auto",
   },
   // 隐藏默认搜索面板样式
-  '.cm-search.cm-panel': {
-    background: 'transparent',
-    padding: '0',
-    border: 'none',
-    overflow: 'visible',
+  ".cm-search.cm-panel": {
+    background: "transparent",
+    padding: "0",
+    border: "none",
+    overflow: "visible",
   },
   // 搜索匹配高亮 — 所有匹配项（醒目的橙黄色背景）
-  '.cm-searchMatch': {
-    backgroundColor: '#ffe1a8',
-    borderRadius: '2px',
-    boxShadow: '0 0 0 1px #d5a552',
+  ".cm-searchMatch": {
+    backgroundColor: "#ffe1a8",
+    borderRadius: "2px",
+    boxShadow: "0 0 0 1px #d5a552",
   },
   // 当前选中的匹配项（更醒目的橙色背景 + 加粗边框）
-  '.cm-searchMatch-selected': {
-    backgroundColor: '#f5ba68',
-    boxShadow: '0 0 0 2px #bd7a2c',
+  ".cm-searchMatch-selected": {
+    backgroundColor: "#f5ba68",
+    boxShadow: "0 0 0 2px #bd7a2c",
   },
-})
+  ".cm-custom-search-panel": {
+    position: "absolute",
+    top: "8px",
+    right: "16px",
+    zIndex: "100",
+    width: "min(420px, calc(100% - 32px))",
+    background: "var(--surface)",
+    border: "1px solid #D2E0E9",
+    borderRadius: "8px",
+    boxShadow: "0 12px 32px rgba(24,54,75,0.15)",
+    font: "var(--type-action) var(--ui)",
+    padding: "8px",
+    display: "flex",
+    flexDirection: "column",
+    gap: "6px",
+  },
+  ".cm-search-row": { display: "flex", alignItems: "center", gap: "4px" },
+  ".cm-search-input-wrap": {
+    flex: "1",
+    display: "flex",
+    alignItems: "center",
+    background: "#F8FBFD",
+    border: "1px solid #CBDAE3",
+    borderRadius: "4px",
+    padding: "0 6px",
+    transition: "border-color 0.2s",
+    minWidth: "0",
+  },
+  ".cm-search-input": {
+    flex: "1",
+    border: "none",
+    outline: "none",
+    background: "transparent",
+    font: "var(--type-action) var(--ui)",
+    color: "var(--ink)",
+    padding: "4px 0",
+    minWidth: "0",
+  },
+  ".cm-search-count": {
+    fontSize: "var(--type-caption)",
+    color: "var(--muted)",
+    whiteSpace: "nowrap",
+    padding: "0 4px",
+    userSelect: "none",
+    flexShrink: "0",
+  },
+  ".cm-replace-row": {
+    display: "flex",
+    alignItems: "center",
+    gap: "4px",
+    paddingLeft: "26px",
+    overflow: "hidden",
+    transition:
+      "color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease",
+  },
+  ".cm-search-toggle": {
+    width: "26px",
+    height: "22px",
+    border: "1px solid #D2E0E9",
+    borderRadius: "4px",
+    background: "transparent",
+    color: "#496578",
+    font: "600 var(--type-caption) var(--ui)",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    transition:
+      "color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease",
+    flexShrink: "0",
+    padding: "0",
+    lineHeight: "1",
+  },
+  ".cm-search-icon": {
+    width: "26px",
+    height: "22px",
+    border: "none",
+    borderRadius: "4px",
+    background: "transparent",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    transition: "background 0.15s ease",
+    flexShrink: "0",
+    padding: "0",
+    color: "#587181",
+  },
+  ".cm-replace-toggle": { width: "22px" },
+  ".cm-search-input-wrap:focus-within": { borderColor: "var(--blue)" },
+  '.cm-search-input-wrap[data-error="true"]:not(:focus-within)': {
+    borderColor: "var(--coral)",
+  },
+  '.cm-search-count[data-error="true"]': { color: "var(--coral)" },
+  '.cm-search-toggle:hover:not([aria-pressed="true"]), .cm-search-icon:hover': {
+    background: "#EDF4F8",
+  },
+  '.cm-search-toggle[aria-pressed="true"]': {
+    background: "var(--blue)",
+    color: "var(--surface)",
+    borderColor: "var(--blue)",
+  },
+  ".cm-replace-toggle svg": { transition: "transform 0.15s ease" },
+  '.cm-replace-toggle[aria-expanded="true"] svg': {
+    transform: "rotate(90deg)",
+  },
+});
 
 /**
  * 创建自定义搜索面板的工厂函数
  */
 export function createSearchPanel(view) {
-  return new CustomSearchPanel(view)
+  return new CustomSearchPanel(view);
 }
-
-// ─── 样式常量 ───
-const COLORS = {
-  bg: '#FFFFFF',
-  border: '#D2E0E9',
-  inputBg: '#F8FBFD',
-  inputBorder: '#CBDAE3',
-  inputFocusBorder: '#3C67CA',
-  inputErrorBorder: '#BD5962',
-  btnHoverBg: '#EDF4F8',
-  toggleActiveBg: '#3C67CA',
-  toggleActiveColor: '#FFFFFF',
-  toggleColor: '#496578',
-  textPrimary: '#183448',
-  textSecondary: '#587181',
-  textMuted: '#8298A6',
-  countBg: 'transparent',
-  shadow: '0 12px 32px rgba(24,54,75,0.15)',
-}
-
-const UI_FONT_FAMILY = "-apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', sans-serif"
-const FONT = `12px ${UI_FONT_FAMILY}`
 
 class CustomSearchPanel {
   constructor(view) {
-    this.view = view
+    this.view = view;
+    this.controls = [];
 
     // 面板状态
-    this.caseSensitive = false
-    this.regexp = false
-    this.wholeWord = false
-    this.showReplace = false
+    this.caseSensitive = false;
+    this.regexp = false;
+    this.wholeWord = false;
+    this.showReplace = false;
 
     // 匹配计数状态
-    this.matchCount = 0
-    this.currentMatch = 0
-    this.counting = false
-    this._countAbortId = 0
-    this._internalCommit = false
+    this.matchCount = 0;
+    this.currentMatch = 0;
+    this.counting = false;
+    this._countAbortId = 0;
+    this._internalCommit = false;
 
     // 构建 DOM
-    this.dom = this._buildDOM()
-    this.top = true
+    this.dom = this._buildDOM();
+    this.top = true;
 
     // 同步已有的搜索状态
-    this._syncFromState()
+    this._syncFromState();
   }
 
   mount() {
-    this.searchInput.focus()
-    this.searchInput.select()
+    this.searchInput.focus();
+    this.searchInput.select();
   }
 
   update(viewUpdate) {
@@ -133,267 +227,202 @@ class CustomSearchPanel {
     for (const tr of viewUpdate.transactions) {
       for (const effect of tr.effects) {
         if (effect.is(setSearchQuery) && !this._internalCommit) {
-          this._syncFromState()
+          this._syncFromState();
         }
         if (effect.is(openReplaceEffect) && !this.showReplace) {
-          this._toggleReplace()
+          this._toggleReplace();
         }
       }
     }
-    this._internalCommit = false
+    this._internalCommit = false;
     // 文档变化或选区变化时更新计数
     if (viewUpdate.docChanged || viewUpdate.selectionSet) {
       if (viewUpdate.docChanged) {
-        this._startAsyncCount()
+        this._startAsyncCount();
       } else {
-        this._updateCurrentIndex()
+        this._updateCurrentIndex();
       }
     }
   }
 
   destroy() {
-    this._countAbortId++
+    this._countAbortId++;
+    clearTimeout(this._searchDebounce);
+    this.controls.forEach((control) => control.destroy());
   }
 
   // ─── DOM 构建 ───
 
   _buildDOM() {
-    const panel = this._el('div', {
-      className: 'cm-custom-search-panel',
-      style: `
-        position: absolute;
-        top: 8px;
-        right: 16px;
-        z-index: 100;
-        width: min(420px, calc(100vw - 32px));
-        background: ${COLORS.bg};
-        border: 1px solid ${COLORS.border};
-        border-radius: 8px;
-        box-shadow: ${COLORS.shadow};
-        font: ${FONT};
-        padding: 8px;
-        display: flex;
-        flex-direction: column;
-        gap: 6px;
-      `,
-    })
+    const panel = this._el("div", {
+      className: "cm-custom-search-panel",
+    });
 
     // ── 搜索行 ──
-    const searchRow = this._el('div', {
-      style: 'display: flex; align-items: center; gap: 4px;',
-    })
+    const searchRow = this._el("div", {
+      className: "cm-search-row",
+    });
 
     // 展开替换的三角按钮
     this.toggleReplaceBtn = this._iconBtn(
-      this._chevronSVG(false),
-      '展开替换',
-      () => this._toggleReplace()
-    )
-    this.toggleReplaceBtn.style.width = '22px'
-    this.toggleReplaceBtn.style.height = '22px'
-    this.toggleReplaceBtn.style.flexShrink = '0'
-    searchRow.appendChild(this.toggleReplaceBtn)
+      ChevronRight,
+      "展开替换",
+      () => this._toggleReplace(),
+      { className: "cm-replace-toggle", expanded: false },
+    );
+    searchRow.appendChild(this.toggleReplaceBtn);
 
     // 搜索输入框容器（输入框 + 匹配计数）
-    const searchInputWrap = this._el('div', {
-      style: `
-        flex: 1;
-        display: flex;
-        align-items: center;
-        background: ${COLORS.inputBg};
-        border: 1px solid ${COLORS.inputBorder};
-        border-radius: 4px;
-        padding: 0 6px;
-        transition: border-color 0.2s;
-        min-width: 0;
-      `,
-    })
-    this.searchInputWrap = searchInputWrap
+    const searchInputWrap = this._el("div", {
+      className: "cm-search-input-wrap",
+    });
+    this.searchInputWrap = searchInputWrap;
 
-    this.searchInput = this._el('input', {
-      type: 'text',
-      placeholder: '搜索',
-      'main-field': 'true',
-      style: `
-        flex: 1;
-        border: none;
-        outline: none;
-        background: transparent;
-        font: ${FONT};
-        color: ${COLORS.textPrimary};
-        padding: 4px 0;
-        min-width: 0;
-      `,
-    })
-    this.searchInput.addEventListener('input', () => this._onSearchChange())
-    this.searchInput.addEventListener('keydown', (e) => this._onSearchKeydown(e))
-    this.searchInput.addEventListener('focus', () => {
-      searchInputWrap.style.borderColor = COLORS.inputFocusBorder
-    })
-    this.searchInput.addEventListener('blur', () => {
-      this._updateInputBorder()
-    })
+    this.searchInput = this._el("input", {
+      type: "text",
+      placeholder: "搜索…",
+      "aria-label": "搜索 JSON",
+      name: "json-search",
+      autocomplete: "off",
+      spellcheck: "false",
+      "main-field": "true",
+      className: "cm-search-input",
+    });
+    this.searchInput.addEventListener("input", () => this._onSearchChange());
+    this.searchInput.addEventListener("keydown", (e) =>
+      this._onSearchKeydown(e),
+    );
 
     // 匹配计数标签
-    this.matchLabel = this._el('span', {
-      style: `
-        font-size: 11px;
-        color: ${COLORS.textMuted};
-        white-space: nowrap;
-        padding: 0 4px;
-        user-select: none;
-        flex-shrink: 0;
-      `,
-    })
+    this.matchLabel = this._el("span", {
+      "aria-live": "polite",
+      "aria-atomic": "true",
+      className: "cm-search-count",
+    });
 
-    searchInputWrap.appendChild(this.searchInput)
-    searchInputWrap.appendChild(this.matchLabel)
-    searchRow.appendChild(searchInputWrap)
+    searchInputWrap.appendChild(this.searchInput);
+    searchInputWrap.appendChild(this.matchLabel);
+    searchRow.appendChild(searchInputWrap);
 
     // Toggle 按钮：Aa, .*, W
-    this.caseSensitiveBtn = this._toggleBtn('Aa', '区分大小写', () => {
-      this.caseSensitive = !this.caseSensitive
-      this._updateToggleStyle(this.caseSensitiveBtn, this.caseSensitive)
-      this._commit()
-    })
-    this.regexpBtn = this._toggleBtn('.*', '正则表达式', () => {
-      this.regexp = !this.regexp
-      this._updateToggleStyle(this.regexpBtn, this.regexp)
-      this._commit()
-    })
-    this.wholeWordBtn = this._toggleBtn('W', '全词匹配', () => {
-      this.wholeWord = !this.wholeWord
-      this._updateToggleStyle(this.wholeWordBtn, this.wholeWord)
-      this._commit()
-    })
+    this.caseSensitiveBtn = this._toggleBtn("Aa", "区分大小写", () => {
+      this.caseSensitive = !this.caseSensitive;
+      this._updateToggleState(this.caseSensitiveBtn, this.caseSensitive);
+      this._commit();
+    });
+    this.regexpBtn = this._toggleBtn(".*", "正则表达式", () => {
+      this.regexp = !this.regexp;
+      this._updateToggleState(this.regexpBtn, this.regexp);
+      this._commit();
+    });
+    this.wholeWordBtn = this._toggleBtn("W", "全词匹配", () => {
+      this.wholeWord = !this.wholeWord;
+      this._updateToggleState(this.wholeWordBtn, this.wholeWord);
+      this._commit();
+    });
 
-    searchRow.appendChild(this.caseSensitiveBtn)
-    searchRow.appendChild(this.regexpBtn)
-    searchRow.appendChild(this.wholeWordBtn)
+    searchRow.appendChild(this.caseSensitiveBtn);
+    searchRow.appendChild(this.regexpBtn);
+    searchRow.appendChild(this.wholeWordBtn);
 
     // 上一个 / 下一个 / 关闭
-    const prevBtn = this._iconBtn(this._arrowUpSVG(), '上一个 (Shift+Enter)', () => {
-      findPrevious(this.view)
-      this.view.focus()
-    })
-    const nextBtn = this._iconBtn(this._arrowDownSVG(), '下一个 (Enter)', () => {
-      findNext(this.view)
-      this.view.focus()
-    })
-    const closeBtn = this._iconBtn(this._closeSVG(), '关闭 (Esc)', () => {
-      closeSearchPanel(this.view)
-      this.view.focus()
-    })
+    const prevBtn = this._iconBtn(ArrowUp, "上一个 (Shift+Enter)", () => {
+      findPrevious(this.view);
+      this.view.focus();
+    });
+    const nextBtn = this._iconBtn(ArrowDown, "下一个 (Enter)", () => {
+      findNext(this.view);
+      this.view.focus();
+    });
+    const closeBtn = this._iconBtn(X, "关闭 (Esc)", () => {
+      closeSearchPanel(this.view);
+      this.view.focus();
+    });
 
-    searchRow.appendChild(prevBtn)
-    searchRow.appendChild(nextBtn)
-    searchRow.appendChild(closeBtn)
+    searchRow.appendChild(prevBtn);
+    searchRow.appendChild(nextBtn);
+    searchRow.appendChild(closeBtn);
 
-    panel.appendChild(searchRow)
+    panel.appendChild(searchRow);
 
     // ── 替换行（默认隐藏）──
-    this.replaceRow = this._el('div', {
-      style: `
-        display: none;
-        align-items: center;
-        gap: 4px;
-        padding-left: 26px;
-        overflow: hidden;
-        transition: all 0.15s ease;
-      `,
-    })
+    this.replaceRow = this._el("div", {
+      className: "cm-replace-row",
+      hidden: "",
+    });
 
-    const replaceInputWrap = this._el('div', {
-      style: `
-        flex: 1;
-        display: flex;
-        align-items: center;
-        background: ${COLORS.inputBg};
-        border: 1px solid ${COLORS.inputBorder};
-        border-radius: 4px;
-        padding: 0 6px;
-        transition: border-color 0.2s;
-        min-width: 0;
-      `,
-    })
-    this.replaceInputWrap = replaceInputWrap
+    const replaceInputWrap = this._el("div", {
+      className: "cm-search-input-wrap",
+    });
+    this.replaceInputWrap = replaceInputWrap;
 
-    this.replaceInput = this._el('input', {
-      type: 'text',
-      placeholder: '替换',
-      style: `
-        flex: 1;
-        border: none;
-        outline: none;
-        background: transparent;
-        font: ${FONT};
-        color: ${COLORS.textPrimary};
-        padding: 4px 0;
-        min-width: 0;
-      `,
-    })
-    this.replaceInput.addEventListener('input', () => this._commit())
-    this.replaceInput.addEventListener('keydown', (e) => this._onReplaceKeydown(e))
-    this.replaceInput.addEventListener('focus', () => {
-      replaceInputWrap.style.borderColor = COLORS.inputFocusBorder
-    })
-    this.replaceInput.addEventListener('blur', () => {
-      replaceInputWrap.style.borderColor = COLORS.inputBorder
-    })
+    this.replaceInput = this._el("input", {
+      type: "text",
+      placeholder: "替换…",
+      "aria-label": "替换为",
+      name: "json-replace",
+      autocomplete: "off",
+      spellcheck: "false",
+      className: "cm-search-input",
+    });
+    this.replaceInput.addEventListener("input", () => this._commit());
+    this.replaceInput.addEventListener("keydown", (e) =>
+      this._onReplaceKeydown(e),
+    );
 
-    replaceInputWrap.appendChild(this.replaceInput)
-    this.replaceRow.appendChild(replaceInputWrap)
+    replaceInputWrap.appendChild(this.replaceInput);
+    this.replaceRow.appendChild(replaceInputWrap);
 
     // 替换当前 / 替换全部
-    const replaceBtn = this._iconBtn(this._replaceSVG(), '替换当前', () => {
-      replaceNext(this.view)
-      this.view.focus()
-    })
-    const replaceAllBtn = this._iconBtn(this._replaceAllSVG(), '替换全部', () => {
-      replaceAll(this.view)
-      this.view.focus()
-    })
+    const replaceBtn = this._iconBtn(Replace, "替换当前", () => {
+      replaceNext(this.view);
+      this.view.focus();
+    });
+    const replaceAllBtn = this._iconBtn(ReplaceAll, "替换全部", () => {
+      replaceAll(this.view);
+      this.view.focus();
+    });
 
-    this.replaceRow.appendChild(replaceBtn)
-    this.replaceRow.appendChild(replaceAllBtn)
+    this.replaceRow.appendChild(replaceBtn);
+    this.replaceRow.appendChild(replaceAllBtn);
 
-    panel.appendChild(this.replaceRow)
+    panel.appendChild(this.replaceRow);
 
-    return panel
+    return panel;
   }
 
   // ─── 逻辑方法 ───
 
   _onSearchChange() {
-    clearTimeout(this._searchDebounce)
+    clearTimeout(this._searchDebounce);
     this._searchDebounce = setTimeout(() => {
-      this._commit()
-    }, 150)
+      this._commit();
+    }, 150);
   }
 
   _onSearchKeydown(e) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
-      findNext(this.view)
-    } else if (e.key === 'Enter' && e.shiftKey) {
-      e.preventDefault()
-      findPrevious(this.view)
-    } else if (e.key === 'Escape') {
-      e.preventDefault()
-      closeSearchPanel(this.view)
-      this.view.focus()
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      findNext(this.view);
+    } else if (e.key === "Enter" && e.shiftKey) {
+      e.preventDefault();
+      findPrevious(this.view);
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      closeSearchPanel(this.view);
+      this.view.focus();
     }
   }
 
   _onReplaceKeydown(e) {
-    if (e.key === 'Enter') {
-      e.preventDefault()
-      replaceNext(this.view)
-      this.view.focus()
-    } else if (e.key === 'Escape') {
-      e.preventDefault()
-      closeSearchPanel(this.view)
-      this.view.focus()
+    if (e.key === "Enter") {
+      e.preventDefault();
+      replaceNext(this.view);
+      this.view.focus();
+    } else if (e.key === "Escape") {
+      e.preventDefault();
+      closeSearchPanel(this.view);
+      this.view.focus();
     }
   }
 
@@ -404,396 +433,252 @@ class CustomSearchPanel {
       regexp: this.regexp,
       wholeWord: this.wholeWord,
       replace: this.replaceInput.value,
-    })
+    });
     if (!query.eq(getSearchQuery(this.view.state))) {
-      this._internalCommit = true
-      this.view.dispatch({ effects: setSearchQuery.of(query) })
+      this._internalCommit = true;
+      this.view.dispatch({ effects: setSearchQuery.of(query) });
     }
-    this._startAsyncCount()
+    this._startAsyncCount();
   }
 
   _syncFromState() {
-    const query = getSearchQuery(this.view.state)
+    const query = getSearchQuery(this.view.state);
     if (this.searchInput.value !== query.search) {
-      this.searchInput.value = query.search
+      this.searchInput.value = query.search;
     }
     if (this.replaceInput.value !== query.replace) {
-      this.replaceInput.value = query.replace
+      this.replaceInput.value = query.replace;
     }
-    this.caseSensitive = query.caseSensitive
-    this.regexp = query.regexp
-    this.wholeWord = query.wholeWord
-    this._updateToggleStyle(this.caseSensitiveBtn, this.caseSensitive)
-    this._updateToggleStyle(this.regexpBtn, this.regexp)
-    this._updateToggleStyle(this.wholeWordBtn, this.wholeWord)
-    this._startAsyncCount()
+    this.caseSensitive = query.caseSensitive;
+    this.regexp = query.regexp;
+    this.wholeWord = query.wholeWord;
+    this._updateToggleState(this.caseSensitiveBtn, this.caseSensitive);
+    this._updateToggleState(this.regexpBtn, this.regexp);
+    this._updateToggleState(this.wholeWordBtn, this.wholeWord);
+    this._startAsyncCount();
   }
 
   // ─── 异步分片匹配计数 ───
 
   _startAsyncCount() {
-    const abortId = ++this._countAbortId
-    const searchStr = this.searchInput.value
+    const abortId = ++this._countAbortId;
+    const searchStr = this.searchInput.value;
     if (!searchStr) {
-      this.matchCount = 0
-      this.currentMatch = 0
-      this.counting = false
-      this._updateMatchLabel()
-      this._updateInputBorder()
-      return
+      this.matchCount = 0;
+      this.currentMatch = 0;
+      this.counting = false;
+      this._updateMatchLabel();
+      this._updateSearchStatus();
+      return;
     }
 
-    this.counting = true
-    this._updateMatchLabel()
+    this.counting = true;
+    this._updateMatchLabel();
 
-    const query = getSearchQuery(this.view.state)
+    const query = getSearchQuery(this.view.state);
     if (!query.valid) {
-      this.matchCount = 0
-      this.currentMatch = 0
-      this.counting = false
-      this.matchLabel.textContent = '无效正则'
-      this.matchLabel.style.color = COLORS.inputErrorBorder
-      this._updateInputBorder()
-      return
+      this.matchCount = 0;
+      this.currentMatch = 0;
+      this.counting = false;
+      this.matchLabel.textContent = "无效正则";
+      this.matchLabel.dataset.error = "true";
+      this._updateSearchStatus();
+      return;
     }
 
-    const state = this.view.state
-    const cursor = query.getCursor(state)
-    const selFrom = state.selection.main.from
-    const selTo = state.selection.main.to
+    const state = this.view.state;
+    const cursor = query.getCursor(state);
+    const selFrom = state.selection.main.from;
+    const selTo = state.selection.main.to;
 
-    let count = 0
-    let currentIdx = 0
-    let found = false
+    let count = 0;
+    let currentIdx = 0;
+    let found = false;
 
     const processChunk = () => {
-      if (abortId !== this._countAbortId) return
+      if (abortId !== this._countAbortId) return;
 
-      const chunkSize = 2000
+      const chunkSize = 2000;
       for (let i = 0; i < chunkSize; i++) {
-        const result = cursor.next()
+        const result = cursor.next();
         if (result.done) {
           // 完成
-          this.matchCount = count
-          this.currentMatch = found ? currentIdx : 0
-          this.counting = false
-          this._updateMatchLabel()
-          this._updateInputBorder()
-          return
+          this.matchCount = count;
+          this.currentMatch = found ? currentIdx : 0;
+          this.counting = false;
+          this._updateMatchLabel();
+          this._updateSearchStatus();
+          return;
         }
-        count++
+        count++;
         // 检查当前选区是否精确匹配此结果
-        if (!found && result.value.from === selFrom && result.value.to === selTo) {
-          currentIdx = count
-          found = true
+        if (
+          !found &&
+          result.value.from === selFrom &&
+          result.value.to === selTo
+        ) {
+          currentIdx = count;
+          found = true;
         }
       }
 
       // 继续下一个分片
-      if (typeof requestIdleCallback === 'function') {
-        requestIdleCallback(processChunk, { timeout: 50 })
+      if (typeof requestIdleCallback === "function") {
+        requestIdleCallback(processChunk, { timeout: 50 });
       } else {
-        setTimeout(processChunk, 0)
+        setTimeout(processChunk, 0);
       }
-    }
+    };
 
     // 启动第一个分片
-    if (typeof requestIdleCallback === 'function') {
-      requestIdleCallback(processChunk, { timeout: 50 })
+    if (typeof requestIdleCallback === "function") {
+      requestIdleCallback(processChunk, { timeout: 50 });
     } else {
-      setTimeout(processChunk, 0)
+      setTimeout(processChunk, 0);
     }
   }
 
   _updateCurrentIndex() {
-    if (!this.searchInput.value || this.counting) return
-    const query = getSearchQuery(this.view.state)
-    if (!query.valid || !query.search) return
+    if (!this.searchInput.value || this.counting) return;
+    const query = getSearchQuery(this.view.state);
+    if (!query.valid || !query.search) return;
 
-    const state = this.view.state
-    const cursor = query.getCursor(state)
-    const selFrom = state.selection.main.from
-    const selTo = state.selection.main.to
+    const state = this.view.state;
+    const cursor = query.getCursor(state);
+    const selFrom = state.selection.main.from;
+    const selTo = state.selection.main.to;
 
-    let count = 0
-    let found = false
-    let currentIdx = 0
+    let count = 0;
+    let found = false;
+    let currentIdx = 0;
 
     // 如果已有 matchCount，只需找到当前索引
-    const hasTotal = this.matchCount > 0
+    const hasTotal = this.matchCount > 0;
 
     while (true) {
-      const result = cursor.next()
-      if (result.done) break
-      count++
-      if (!found && result.value.from === selFrom && result.value.to === selTo) {
-        currentIdx = count
-        found = true
+      const result = cursor.next();
+      if (result.done) break;
+      count++;
+      if (
+        !found &&
+        result.value.from === selFrom &&
+        result.value.to === selTo
+      ) {
+        currentIdx = count;
+        found = true;
         if (hasTotal) {
-          this.currentMatch = currentIdx
-          this._updateMatchLabel()
-          return
+          this.currentMatch = currentIdx;
+          this._updateMatchLabel();
+          return;
         }
       }
     }
-    this.matchCount = count
-    this.currentMatch = found ? currentIdx : 0
-    this._updateMatchLabel()
-    this._updateInputBorder()
+    this.matchCount = count;
+    this.currentMatch = found ? currentIdx : 0;
+    this._updateMatchLabel();
+    this._updateSearchStatus();
   }
 
   _updateMatchLabel() {
     if (!this.searchInput.value) {
-      this.matchLabel.textContent = ''
-      this.matchLabel.style.color = COLORS.textMuted
-      return
+      this.matchLabel.textContent = "";
+      this.matchLabel.dataset.error = "false";
+      return;
     }
     if (this.counting) {
-      this.matchLabel.textContent = '计算中...'
-      this.matchLabel.style.color = COLORS.textMuted
-      return
+      this.matchLabel.textContent = "计算中...";
+      this.matchLabel.dataset.error = "false";
+      return;
     }
     if (this.matchCount === 0) {
-      this.matchLabel.textContent = '无结果'
-      this.matchLabel.style.color = COLORS.inputErrorBorder
-      return
+      this.matchLabel.textContent = "无结果";
+      this.matchLabel.dataset.error = "true";
+      return;
     }
     if (this.currentMatch > 0) {
-      this.matchLabel.textContent = `${this.currentMatch} / ${this.matchCount}`
+      this.matchLabel.textContent = `${this.currentMatch} / ${this.matchCount}`;
     } else {
-      this.matchLabel.textContent = `${this.matchCount} 个结果`
+      this.matchLabel.textContent = `${this.matchCount} 个结果`;
     }
-    this.matchLabel.style.color = COLORS.textMuted
+    this.matchLabel.dataset.error = "false";
   }
 
-  _updateInputBorder() {
-    if (this.searchInput === document.activeElement) return
-    if (this.searchInput.value && !this.counting && this.matchCount === 0) {
-      this.searchInputWrap.style.borderColor = COLORS.inputErrorBorder
-    } else {
-      this.searchInputWrap.style.borderColor = COLORS.inputBorder
-    }
+  _updateSearchStatus() {
+    const error = Boolean(
+      this.searchInput.value && !this.counting && this.matchCount === 0,
+    );
+    this.searchInputWrap.dataset.error = String(error);
+    this.searchInput.setAttribute(
+      "aria-invalid",
+      String(!getSearchQuery(this.view.state).valid),
+    );
   }
 
   _toggleReplace() {
-    this.showReplace = !this.showReplace
-    this.replaceRow.style.display = this.showReplace ? 'flex' : 'none'
-    this.toggleReplaceBtn.innerHTML = ''
-    this.toggleReplaceBtn.appendChild(this._chevronSVG(this.showReplace))
+    this.showReplace = !this.showReplace;
+    this.replaceRow.hidden = !this.showReplace;
+    this._updateControl(this.toggleReplaceBtn, {
+      expanded: this.showReplace,
+      label: this.showReplace ? "收起替换" : "展开替换",
+    });
     if (this.showReplace) {
-      this.replaceInput.focus()
+      this.replaceInput.focus();
     }
   }
 
   // ─── Toggle 按钮样式 ───
 
-  _updateToggleStyle(btn, active) {
-    if (active) {
-      btn.style.background = COLORS.toggleActiveBg
-      btn.style.color = COLORS.toggleActiveColor
-      btn.style.borderColor = COLORS.toggleActiveBg
-    } else {
-      btn.style.background = 'transparent'
-      btn.style.color = COLORS.toggleColor
-      btn.style.borderColor = COLORS.border
-    }
+  _updateToggleState(btn, active) {
+    this._updateControl(btn, { pressed: active });
   }
 
   // ─── DOM 辅助工具 ───
 
   _el(tag, attrs) {
-    const el = document.createElement(tag)
+    const el = document.createElement(tag);
     if (attrs) {
       for (const [key, val] of Object.entries(attrs)) {
-        if (key === 'style') {
-          el.style.cssText = val
-        } else if (key === 'className') {
-          el.className = val
+        if (key === "className") {
+          el.className = val;
         } else {
-          el.setAttribute(key, val)
+          el.setAttribute(key, val);
         }
       }
     }
-    return el
+    return el;
   }
 
-  _toggleBtn(text, title, onClick) {
-    const btn = this._el('button', {
-      title,
-      style: `
-        width: 26px;
-        height: 22px;
-        border: 1px solid ${COLORS.border};
-        border-radius: 4px;
-        background: transparent;
-        color: ${COLORS.toggleColor};
-        font: bold 11px ${UI_FONT_FAMILY};
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.15s ease;
-        flex-shrink: 0;
-        padding: 0;
-        line-height: 1;
-      `,
-    })
-    btn.textContent = text
-    btn.addEventListener('click', onClick)
-    btn.addEventListener('mouseenter', () => {
-      if (btn.style.background === 'transparent') {
-        btn.style.background = COLORS.btnHoverBg
-      }
-    })
-    btn.addEventListener('mouseleave', () => {
-      // Restore based on active state
-      const isActive =
-        (btn === this.caseSensitiveBtn && this.caseSensitive) ||
-        (btn === this.regexpBtn && this.regexp) ||
-        (btn === this.wholeWordBtn && this.wholeWord)
-      if (!isActive) {
-        btn.style.background = 'transparent'
-      }
-    })
-    return btn
+  _updateControl(dom, props) {
+    this.controls.find((control) => control.dom === dom)?.update(props);
   }
 
-  _iconBtn(svgEl, title, onClick) {
-    const btn = this._el('button', {
-      title,
-      style: `
-        width: 26px;
-        height: 22px;
-        border: none;
-        border-radius: 4px;
-        background: transparent;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: background 0.15s ease;
-        flex-shrink: 0;
-        padding: 0;
-      `,
-    })
-    btn.appendChild(svgEl)
-    btn.addEventListener('click', onClick)
-    btn.addEventListener('mouseenter', () => {
-      btn.style.background = COLORS.btnHoverBg
-    })
-    btn.addEventListener('mouseleave', () => {
-      btn.style.background = 'transparent'
-    })
-    return btn
+  _toggleBtn(text, label, onClick) {
+    const hints = {
+      区分大小写: "只匹配大小写完全相同的内容",
+      正则表达式: "使用正则表达式搜索，例如 \\d+ 匹配数字",
+      全词匹配: "只匹配完整单词",
+    };
+    const control = createTooltipControl({
+      text,
+      label,
+      hint: hints[label],
+      onClick,
+      className: "cm-search-toggle",
+      pressed: false,
+    });
+    this.controls.push(control);
+    return control.dom;
   }
 
-  // ─── SVG 图标 ───
-
-  _chevronSVG(expanded) {
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-    svg.setAttribute('width', '14')
-    svg.setAttribute('height', '14')
-    svg.setAttribute('viewBox', '0 0 16 16')
-    svg.setAttribute('fill', 'none')
-    svg.style.transition = 'transform 0.15s ease'
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-    path.setAttribute('d', 'M6 4l4 4-4 4')
-    path.setAttribute('stroke', COLORS.textSecondary)
-    path.setAttribute('stroke-width', '1.5')
-    path.setAttribute('stroke-linecap', 'round')
-    path.setAttribute('stroke-linejoin', 'round')
-    svg.appendChild(path)
-    if (expanded) {
-      svg.style.transform = 'rotate(90deg)'
-    }
-    return svg
-  }
-
-  _arrowUpSVG() {
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-    svg.setAttribute('width', '14')
-    svg.setAttribute('height', '14')
-    svg.setAttribute('viewBox', '0 0 16 16')
-    svg.setAttribute('fill', 'none')
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-    path.setAttribute('d', 'M8 12V4M4 7l4-3.5L12 7')
-    path.setAttribute('stroke', COLORS.textSecondary)
-    path.setAttribute('stroke-width', '1.5')
-    path.setAttribute('stroke-linecap', 'round')
-    path.setAttribute('stroke-linejoin', 'round')
-    svg.appendChild(path)
-    return svg
-  }
-
-  _arrowDownSVG() {
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-    svg.setAttribute('width', '14')
-    svg.setAttribute('height', '14')
-    svg.setAttribute('viewBox', '0 0 16 16')
-    svg.setAttribute('fill', 'none')
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-    path.setAttribute('d', 'M8 4v8M4 9l4 3.5L12 9')
-    path.setAttribute('stroke', COLORS.textSecondary)
-    path.setAttribute('stroke-width', '1.5')
-    path.setAttribute('stroke-linecap', 'round')
-    path.setAttribute('stroke-linejoin', 'round')
-    svg.appendChild(path)
-    return svg
-  }
-
-  _closeSVG() {
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-    svg.setAttribute('width', '14')
-    svg.setAttribute('height', '14')
-    svg.setAttribute('viewBox', '0 0 16 16')
-    svg.setAttribute('fill', 'none')
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-    path.setAttribute('d', 'M4 4l8 8M12 4l-8 8')
-    path.setAttribute('stroke', COLORS.textSecondary)
-    path.setAttribute('stroke-width', '1.5')
-    path.setAttribute('stroke-linecap', 'round')
-    svg.appendChild(path)
-    return svg
-  }
-
-  _replaceSVG() {
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-    svg.setAttribute('width', '14')
-    svg.setAttribute('height', '14')
-    svg.setAttribute('viewBox', '0 0 16 16')
-    svg.setAttribute('fill', 'none')
-    // Simple replace icon: single arrow swap
-    const path = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-    path.setAttribute('d', 'M3 5h8l-2.5-2.5M13 11H5l2.5 2.5')
-    path.setAttribute('stroke', COLORS.textSecondary)
-    path.setAttribute('stroke-width', '1.5')
-    path.setAttribute('stroke-linecap', 'round')
-    path.setAttribute('stroke-linejoin', 'round')
-    svg.appendChild(path)
-    return svg
-  }
-
-  _replaceAllSVG() {
-    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-    svg.setAttribute('width', '14')
-    svg.setAttribute('height', '14')
-    svg.setAttribute('viewBox', '0 0 16 16')
-    svg.setAttribute('fill', 'none')
-    // Double arrow for replace all
-    const path1 = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-    path1.setAttribute('d', 'M2 4h8l-2-2M14 7H6l2 2')
-    path1.setAttribute('stroke', COLORS.textSecondary)
-    path1.setAttribute('stroke-width', '1.5')
-    path1.setAttribute('stroke-linecap', 'round')
-    path1.setAttribute('stroke-linejoin', 'round')
-    const path2 = document.createElementNS('http://www.w3.org/2000/svg', 'path')
-    path2.setAttribute('d', 'M2 10h8l-2-2M14 13H6l2 2')
-    path2.setAttribute('stroke', COLORS.textSecondary)
-    path2.setAttribute('stroke-width', '1.5')
-    path2.setAttribute('stroke-linecap', 'round')
-    path2.setAttribute('stroke-linejoin', 'round')
-    svg.appendChild(path1)
-    svg.appendChild(path2)
-    return svg
+  _iconBtn(Icon, label, onClick, options = {}) {
+    const control = createTooltipControl({
+      Icon,
+      label,
+      onClick,
+      ...options,
+      className: `cm-search-icon ${options.className ?? ""}`,
+    });
+    this.controls.push(control);
+    return control.dom;
   }
 }

@@ -1,0 +1,96 @@
+:root {
+  --navy: #18364b;
+  --navy-light: #24465c;
+  --canvas: #f4f7f9;
+  --surface: #ffffff;
+  --ink: #183448;
+  --muted: #607584;
+  --success: #17796d;
+  --rule: #d9e4ea;
+  --blue: #3c67ca;
+  --blue-soft: #eaf0ff;
+  --teal: #177f80;
+  --teal-soft: #e5f5f1;
+  --coral: #bd5962;
+  --coral-soft: #fcebed;
+  --amber: #af7433;
+  --amber-soft: #fff4e6;
+  --syntax-text: #1c394d;
+  --syntax-key: #47699c;
+  --syntax-string: #087c71;
+  --syntax-number: #875495;
+  --syntax-literal: #89512b;
+  --syntax-punctuation: #587181;
+  --mono:
+    "SFMono-Regular", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
+  --app-header-height: 72px;
+  --type-caption: 0.75rem;
+  --type-action: 0.8125rem;
+  --type-body: 0.875rem;
+  --type-code: 0.9375rem;
+  --type-title: 1rem;
+  --type-brand: 1.25rem;
+  --code-line-height: 29px;
+  --tree-line-height: 26px;
+  --ui: "Avenir Next", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+@media (max-width: 760px) {
+  :root {
+    --app-header-height: 60px;
+  }
+}
+
+@layer base {
+  * {
+    box-sizing: border-box;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply m-0;
+    min-width: 320px;
+    color: var(--ink);
+    background: var(--canvas);
+    font-family: var(--ui);
+    font-size: var(--type-body);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  button:focus-visible {
+    outline: 3px solid #69a9e6;
+    outline-offset: 3px;
+  }
+  a:focus-visible {
+    outline: 3px solid #69a9e6;
+    outline-offset: 3px;
+  }
+  svg {
+    @apply block;
+  }
+  [hidden] {
+    display: none !important;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    * {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+    *::before {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+  a {
+    color: inherit;
+  }
+}
