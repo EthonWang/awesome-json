@@ -84,7 +84,7 @@ npm ci
 npm run dev
 ```
 
-打开终端显示的地址，默认是 **http://localhost:5173**。
+打开终端显示的地址，默认是 [http://localhost:5173](http://localhost:5173)。
 
 在「JSON 编辑」中粘贴内容即可开始；在「JSON Diff」中输入两侧内容后点击「开始对比」，也可以用「载入示例」体验。
 
