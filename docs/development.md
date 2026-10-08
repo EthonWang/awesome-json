@@ -49,3 +49,13 @@ git diff --check
 ```
 
 涉及交互或布局的改动还应在浏览器中检查相关页面、键盘操作和响应式布局。
+
+## 构建与部署
+
+运行 `npm run build` 生成 `dist/`，使用 `npm run preview` 在本地预览生产构建。部署时将 `dist/` 内容上传到静态站点服务即可。
+
+项目使用 Hash 路由（`/#/` 和 `/#/diff`），无需为页面路由配置服务端重写。如果部署到子路径，例如 GitHub Pages 的 `/awesome-json/`，构建时指定资源路径：
+
+```bash
+npm run build -- --base=/awesome-json/
+```

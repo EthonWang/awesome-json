@@ -1,69 +1,77 @@
 <div align="center">
 
-<img src="./docs/images/logo.svg" width="72" alt="Awesome JSON logo" />
+<img src="./docs/images/logo.svg" width="80" alt="Awesome JSON" />
 
 # Awesome JSON
 
-**JSON 编辑 · 格式化 · 差异对比**
+**清晰地编辑 JSON，直观地比较差异。**
 
-面向桌面的 JSON 工具，支持多标签编辑、实时校验和按字段定位差异。
+一个在浏览器中运行的 JSON 工具，集编辑、格式化、树形查看与差异对比于一体。
 
 <p>
-  <a href="#快速开始"><strong>快速开始</strong></a>
-  &nbsp;·&nbsp;
-  <a href="#界面预览">界面预览</a>
-  &nbsp;·&nbsp;
+  <a href="#快速开始">快速开始</a> ·
+  <a href="#json-编辑器">JSON 编辑器</a> ·
+  <a href="#json-diff">差异对比</a> ·
+  <a href="./docs/development.md">开发指南</a> ·
   <a href="https://github.com/EthonWang/awesome-json/issues">反馈问题</a>
 </p>
 
 <p>
-  <img alt="React 19" src="https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white" />
-  <img alt="CodeMirror 6" src="https://img.shields.io/badge/CodeMirror-6-d30707?logo=codemirror&logoColor=white" />
-  <img alt="Tailwind CSS 4" src="https://img.shields.io/badge/Tailwind_CSS-4-06b6d4?logo=tailwindcss&logoColor=white" />
-  <img alt="shadcn/ui" src="https://img.shields.io/badge/shadcn%2Fui-Components-000?logo=shadcnui&logoColor=white" />
-  <img alt="Vite 7" src="https://img.shields.io/badge/Vite-7-646cff?logo=vite&logoColor=white" />
+  <img src="https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white" alt="React 19" />
+  <img src="https://img.shields.io/badge/Tailwind_CSS-4-06b6d4?logo=tailwindcss&logoColor=white" alt="Tailwind CSS 4" />
+  <img src="https://img.shields.io/badge/shadcn%2Fui-000?logo=shadcnui&logoColor=white" alt="shadcn/ui" />
 </p>
-
-<img src="./docs/images/diff-react.jpg" alt="JSON Diff：并排查看差异，通过差异索引筛选和定位字段" width="960" />
 
 </div>
 
-## 功能
+## JSON 编辑器
 
-| JSON 编辑 | JSON Diff |
+用于查看、整理和修改 JSON。粘贴接口响应、配置文件或日志片段后，即可在同一工作区完成编辑、校验与搜索替换。
+
+<!-- 在此补充 JSON 编辑器截图。 -->
+
+- **多标签工作区**：同时处理多份 JSON，切换标签页和页面时保留当前内容。
+- **代码编辑**：语法高亮、行号、括号匹配、自动补全与节点折叠，底部显示字符数和光标行列。
+- **实时校验**：输入时检查 JSON 语法，格式有误时显示错误说明。
+- **格式整理**：支持格式化和压缩；自动格式化默认开启，也可以随时关闭。
+- **内容处理**：搜索替换、转义、去转义与复制，方便在接口调试和配置编辑之间使用。
+
+**使用方式**：粘贴 JSON → 查看校验状态 → 编辑或整理内容 → 复制结果。自动格式化在停止输入约 800 毫秒后执行，仅处理有效 JSON。
+
+## JSON Diff
+
+用于比较两份 JSON 的内容差异。左右两侧分别输入原始内容和目标内容，对比结果按字段与数组元素展示，适合检查配置变更或接口响应变化。
+
+<!-- 在此补充 JSON Diff 截图。 -->
+
+### 输入与对比
+
+两侧输入区都支持格式化、可视化、复制和清空。「编辑」可以把这一侧的内容带入编辑页面的新标签页，继续处理。
+
+点击「开始对比」生成结果。修改输入后，用「重新对比」更新结果；结果展示时可以收起输入区，腾出更多阅读空间。首次使用可以点击「载入示例」体验。
+
+### 阅读与定位差异
+
+| 差异类型 | 含义（从原始到目标） |
 | :--- | :--- |
-| 多标签编辑，切换工作区保留当前内容 | 双栏输入，按字段递归比较对象和数组 |
-| 语法高亮、括号匹配、自动补全与代码折叠 | 用四种颜色区分新增、缺失、修改和类型变化 |
-| 实时校验与浮动消息提示，可开关自动格式化 | 差异索引，支持收起、分类筛选和逐项跳转 |
-| 格式化、压缩、复制、转义和去转义 | 两侧独立编辑，支持树形可视化查看 |
-| 搜索替换，状态栏显示字符数与光标行列 | 点击差异行定位，复制差异摘要 |
+| <img src="https://img.shields.io/badge/新增-137158?style=flat-square" alt="新增（绿色）" /> | 目标新增字段或数组元素 |
+| <img src="https://img.shields.io/badge/缺失-a5444d?style=flat-square" alt="缺失（红色）" /> | 目标缺少原始字段或数组元素 |
+| <img src="https://img.shields.io/badge/修改-875817?style=flat-square" alt="修改（琥珀色）" /> | 同类型的值发生变化 |
+| <img src="https://img.shields.io/badge/类型变化-7558a6?style=flat-square" alt="类型变化（紫色）" /> | 值的类型发生变化，例如数字变为字符串 |
 
-JSON 的解析、格式化和对比均在浏览器内完成，无需后端服务。页面内切换会保留输入内容，**刷新或关闭页面后不会自动恢复**；编辑过内容时会尝试触发浏览器的离开提醒，请及时复制保存。
+差异索引支持分类筛选和逐项跳转。点击索引项或结果中的差异行，可以定位对应内容；「上一个 / 下一个」用于连续查看，当前路径与变化说明同步展示。「复制摘要」可复制差异路径和说明。
 
-## 界面预览
+宽屏下索引位于结果右侧；较窄屏幕下使用可收起的浮动面板。对象比较忽略属性顺序，数组按索引逐项比较。
 
-### JSON 编辑器
+### 树形可视化
 
-粘贴 JSON 后，工具栏显示实时校验状态。自动格式化默认开启，有效 JSON 在停止输入约 800 毫秒后整理缩进；可以随时关闭，改用手动格式化。底部状态栏显示当前光标的行、列位置。
+点击任一侧的「可视化」，以树形结构查看 JSON，无需在长文本中寻找对象和数组的边界。
 
-<img src="./docs/images/editor-react.jpg" alt="JSON 编辑器：分组工具栏、代码折叠和光标位置状态栏" width="960" />
+<!-- 在此补充 JSON 树形可视化弹窗截图。 -->
 
-### JSON Diff
+节点支持展开、收起，层级虚线帮助辨认嵌套关系；对象与数组显示项目数量。悬停或键盘聚焦时显示复制按钮，可以复制指定节点及其内容。
 
-1. 在左右两侧分别输入原始 JSON 和目标 JSON，点击「开始对比」。
-2. 通过差异索引筛选类别，点击列表或高亮代码行定位，也可使用「上一个 / 下一个」。
-3. 修改输入后，点击「重新对比」更新结果；点击「清空两侧」重新开始。
-
-Diff 页默认留空。「载入示例」提供约 100 行的嵌套配置，包含 26 处差异，可直接体验对象、数组以及类型变化的对比效果。
-
-| 差异 | 颜色 | 含义（从原始到目标） |
-| :--- | :--- | :--- |
-| 新增 | 🟢 绿色 | 目标新增字段或数组元素 |
-| 缺失 | 🔴 红色 | 目标缺少原始字段或数组元素 |
-| 修改 | 🟠 琥珀色 | 同类型的值发生变化 |
-| 类型 | 🟣 紫色 | 类型发生变化，如数字变字符串、布尔值变对象 |
-
-对比忽略对象属性顺序，结果按属性名排序展示；数组按索引逐项比较。选中的差异额外显示蓝色边框，索引上方同步显示当前路径和变化说明。
+> 所有 JSON 处理均在浏览器内完成，无需后端服务。内容仅保留在当前页面会话中，刷新或关闭前请自行保存。
 
 ## 快速开始
 
@@ -76,49 +84,27 @@ npm ci
 npm run dev
 ```
 
-按终端提示打开本地地址，通常为 `http://localhost:5173`。
+打开终端显示的地址，默认是 **http://localhost:5173**。
 
-| 命令 | 用途 |
+在「JSON 编辑」中粘贴内容即可开始；在「JSON Diff」中输入两侧内容后点击「开始对比」，也可以用「载入示例」体验。
+
+<details>
+<summary>常用快捷键</summary>
+
+| 快捷键 | 操作 |
 | :--- | :--- |
-| `npm run dev` | 启动开发服务 |
-| `npm run build` | 生成生产构建，输出到 `dist/` |
-| `npm run preview` | 在本地预览生产构建 |
+| `Ctrl / ⌘ + F` | 搜索 |
+| `Ctrl / ⌘ + H` | 搜索并替换 |
+| `Ctrl / ⌘ + Z` | 撤销编辑 |
+| `N` / `→` | 下一处差异 |
+| `P` / `←` | 上一处差异 |
 
-### 静态部署
+差异导航在焦点不处于输入框、按钮或弹窗内时生效。
 
-将 `dist/` 的内容部署到静态站点服务即可。项目使用 Hash 路由（`/#/` 和 `/#/diff`），无需为页面路由配置服务端重写。
+</details>
 
-如果部署在子路径，例如 GitHub Pages 的 `/awesome-json/`，构建时指定资源路径：
+## 开发与贡献
 
-```bash
-npm run build -- --base=/awesome-json/
-```
+基于 **React、Vite、CodeMirror、Tailwind CSS 和 shadcn/ui** 构建，JSON 树使用 `@uiw/react-json-view`。
 
-## 快捷键
-
-| 场景 | 快捷键 | 操作 |
-| :--- | :--- | :--- |
-| 编辑器 | `Ctrl / ⌘ + F` | 搜索 |
-| 编辑器 | `Ctrl / ⌘ + H` | 搜索并替换 |
-| 编辑器 | `Ctrl / ⌘ + Z` | 撤销 |
-| Diff 结果 | `N` / `→` | 下一处差异 |
-| Diff 结果 | `P` / `←` | 上一处差异 |
-
-Diff 导航快捷键在焦点不处于输入框、按钮或弹窗内时生效，并按当前筛选结果跳转。
-
-## 技术栈
-
-| 技术 | 用途 |
-| :--- | :--- |
-| React 19 + React Router | 页面、状态和工作区路由 |
-| CodeMirror 6 + `@uiw/react-codemirror` | JSON 编辑、折叠、搜索替换 |
-| Tailwind CSS 4 + shadcn/ui | 主题、布局和基础 UI 组件（基于 Radix UI） |
-| Lucide React | 界面图标 |
-| `@uiw/react-json-view` | JSON 树形查看 |
-| Vite 7 | 开发服务与生产构建 |
-
-差异比较由项目内的递归引擎实现。
-
-## 参与贡献
-
-欢迎通过 [Issue](https://github.com/EthonWang/awesome-json/issues) 报告问题或提出建议，也欢迎提交 Pull Request。反馈时请附上复现步骤、浏览器版本和可公开的示例 JSON；提交代码前请运行 `npm run build` 和 `node --test tests/*.test.js`。项目结构与组件约定见 [开发指南](docs/development.md)。
+项目结构、样式约定与部署方法见 [开发指南](./docs/development.md)。欢迎提交 [Issue](https://github.com/EthonWang/awesome-json/issues) 或 Pull Request；反馈问题时请附上复现步骤和可公开的示例 JSON。
