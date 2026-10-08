@@ -19,11 +19,12 @@
 <p>
   <img alt="React 19" src="https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white" />
   <img alt="CodeMirror 6" src="https://img.shields.io/badge/CodeMirror-6-d30707?logo=codemirror&logoColor=white" />
-  <img alt="Radix UI" src="https://img.shields.io/badge/Radix_UI-Components-222?logo=radixui&logoColor=white" />
+  <img alt="Tailwind CSS 4" src="https://img.shields.io/badge/Tailwind_CSS-4-06b6d4?logo=tailwindcss&logoColor=white" />
+  <img alt="shadcn/ui" src="https://img.shields.io/badge/shadcn%2Fui-Components-000?logo=shadcnui&logoColor=white" />
   <img alt="Vite 7" src="https://img.shields.io/badge/Vite-7-646cff?logo=vite&logoColor=white" />
 </p>
 
-<img src="./docs/images/diff-react.jpg" alt="JSON Diff：并排查看差异，通过浮动索引筛选和定位字段" width="960" />
+<img src="./docs/images/diff-react.jpg" alt="JSON Diff：并排查看差异，通过差异索引筛选和定位字段" width="960" />
 
 </div>
 
@@ -33,7 +34,7 @@
 | :--- | :--- |
 | 多标签编辑，切换工作区保留当前内容 | 双栏输入，按字段递归比较对象和数组 |
 | 语法高亮、括号匹配、自动补全与代码折叠 | 用四种颜色区分新增、缺失、修改和类型变化 |
-| 实时校验与浮动消息提示，可开关自动格式化 | 浮动差异索引，支持收起、分类筛选和逐项跳转 |
+| 实时校验与浮动消息提示，可开关自动格式化 | 差异索引，支持收起、分类筛选和逐项跳转 |
 | 格式化、压缩、复制、转义和去转义 | 两侧独立编辑，支持树形可视化查看 |
 | 搜索替换，状态栏显示字符数与光标行列 | 点击差异行定位，复制差异摘要 |
 
@@ -93,8 +94,6 @@ npm run dev
 npm run build -- --base=/awesome-json/
 ```
 
-剪贴板功能需要 HTTPS 或 localhost 环境，以及浏览器允许访问剪贴板。
-
 ## 快捷键
 
 | 场景 | 快捷键 | 操作 |
@@ -113,29 +112,13 @@ Diff 导航快捷键在焦点不处于输入框、按钮或弹窗内时生效，
 | :--- | :--- |
 | React 19 + React Router | 页面、状态和工作区路由 |
 | CodeMirror 6 + `@uiw/react-codemirror` | JSON 编辑、折叠、搜索替换 |
-| Radix UI | 标签页和可视化弹窗 |
+| Tailwind CSS 4 + shadcn/ui | 主题、布局和基础 UI 组件（基于 Radix UI） |
 | Lucide React | 界面图标 |
-| `react-json-view-lite` | JSON 树形查看 |
+| `@uiw/react-json-view` | JSON 树形查看 |
 | Vite 7 | 开发服务与生产构建 |
 
-差异比较由项目内的递归引擎实现，界面使用 Tailwind CSS 和 shadcn/ui。
+差异比较由项目内的递归引擎实现。
 
 ## 参与贡献
 
-欢迎通过 [Issue](https://github.com/EthonWang/awesome-json/issues) 报告问题或提出建议，也欢迎提交 Pull Request。反馈时请附上复现步骤、浏览器版本和可公开的示例 JSON；提交代码前请运行 `npm run build`。
-
-## UI 与样式
-
-界面使用 Tailwind CSS 4 和 shadcn/ui，保留 Awesome JSON 的浅色主题。基础组件源码位于 `src/components/ui`：按钮通过 `variant` 和 `size` 统一外观，弹窗和标签页基于 Radix UI。`components.json` 保存 shadcn/ui 的组件配置。
-
-- `src/styles.css`：Tailwind 入口与主题颜色映射。
-- `src/styles/theme.css`：颜色、字体和全局基础规则。
-- `src/lib/workspaceStyles.js`：共享容器和标题的 Tailwind 类名组合。
-- `src/styles/editor.css`：CodeMirror 内部节点的专用样式。
-- `src/styles/diff.css`：差异语义颜色、语法高亮和连续差异边框。
-- `src/styles/viewer.css`：第三方 JSON 树的主题变量及内部节点对齐。
-- `src/components/JsonTree.jsx`：JSON 树组件封装，统一鼠标与键盘展开、节点复制和焦点样式。
-
-导航、工具栏、标签页、弹窗和响应式布局均使用组件中的 Tailwind 工具类；新增通用布局优先使用 Tailwind 工具类，基础交互优先复用 `ui` 组件。CodeMirror、JSON 树和连续差异边框等特殊场景保留专用 CSS，避免在页面中重复定义按钮样式。
-
-字体规范统一定义在 `src/styles/theme.css`，并由 Tailwind 的语义字号类引用：`text-body`（14px 正文）、`text-action`（13px 按钮）、`text-caption`（12px 辅助信息）、`text-code`（15px 等宽代码）、`text-title`（16px 标题）、`text-brand`（20px 品牌）。辅助文字使用统一的 `text-muted-foreground`，在浅色背景上保持至少 4.5:1 对比度。常规文字使用默认字重，操作与标题使用 600，重点信息使用 700。编辑器与搜索面板复用同一字体变量，不再通过 CSS 强制覆盖编辑器字号。导航栏高度统一使用 `--app-header-height`，桌面为 72px，手机为 60px。
+欢迎通过 [Issue](https://github.com/EthonWang/awesome-json/issues) 报告问题或提出建议，也欢迎提交 Pull Request。反馈时请附上复现步骤、浏览器版本和可公开的示例 JSON；提交代码前请运行 `npm run build` 和 `node --test tests/*.test.js`。项目结构与组件约定见 [开发指南](docs/development.md)。
