@@ -1,3 +1,4 @@
+import i18n from "../i18n/index.js";
 /** Copy from a user action, with a fallback for embedded browsers and HTTP pages. */
 export async function copyText(text) {
   if (navigator.clipboard?.writeText) {
@@ -29,7 +30,7 @@ export async function copyText(text) {
   textarea.value = text;
   textarea.readOnly = true;
   textarea.tabIndex = -1;
-  textarea.setAttribute("aria-label", "复制内容");
+  textarea.setAttribute("aria-label", i18n.t("common:copyContent"));
   Object.assign(textarea.style, {
     position: "fixed",
     top: "0",

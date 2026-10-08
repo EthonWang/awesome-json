@@ -1,0 +1,23 @@
+{
+  "skipContent": "Skip to main content",
+  "home": "Awesome JSON home",
+  "workspace": "Workspace",
+  "editorNav": "JSON Editor",
+  "closeNotice": "Dismiss notification",
+  "copyFailed": "Could not copy automatically. Select the content and press Ctrl/Cmd+C.",
+  "format": "Format",
+  "copy": "Copy",
+  "clear": "Clear",
+  "copied": "Copied",
+  "root": "Root",
+  "collapse": "Collapse",
+  "expand": "Expand",
+  "closeDialog": "Close dialog",
+  "copyContent": "Content to copy",
+  "language": "Interface language",
+  "inputRequired": "Enter {{label}} first.",
+  "errorLocation": " (line {{line}}, column {{column}})",
+  "unclosedGuidance": "Check for unclosed quotes and brackets.",
+  "syntaxGuidance": "Check quotes, commas and brackets near this position.",
+  "jsonError": "Invalid {{label}}{{location}}. {{guidance}}"
+}

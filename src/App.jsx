@@ -1,3 +1,5 @@
+import { translateMessage } from "./i18n/message.js";
+import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -12,8 +14,10 @@ import {
 } from "lucide-react";
 import EditorPage from "./pages/EditorPage.jsx";
 import DiffPage from "./pages/DiffPage.jsx";
+import LanguageSwitcher from "./components/LanguageSwitcher.jsx";
 
 export default function App() {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const editorRef = useRef(null);
@@ -57,12 +61,12 @@ export default function App() {
         }}
         className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:rounded-md focus:bg-background focus:p-3 focus:text-primary"
       >
-        跳到主内容
+        {t("common:skipContent")}
       </a>
       <div className="min-w-0">
-        <header className="flex h-[var(--app-header-height)] items-center gap-[42px] border-b border-border bg-white px-6 max-[900px]:gap-[18px] max-[900px]:px-4">
+        <header className="flex h-[var(--app-header-height)] items-center gap-6 border-b border-border bg-white px-6 max-[900px]:gap-3 max-[480px]:gap-1 max-[900px]:px-4 max-[480px]:px-2">
           <NavLink
-            aria-label="Awesome JSON 首页"
+            aria-label={t("common:home")}
             className="inline-flex flex-none items-center gap-2.5 whitespace-nowrap text-brand font-extrabold tracking-[-.035em] no-underline max-[760px]:text-title [&_img]:block [&_img]:size-8 [&_img]:object-contain max-[760px]:[&_img]:size-[27px]"
             to="/"
           >
@@ -72,23 +76,24 @@ export default function App() {
               width="32"
               height="32"
             />
-            <span className="max-[380px]:hidden" translate="no">
+            <span className="max-[600px]:hidden" translate="no">
               Awesome JSON
             </span>
           </NavLink>
           <nav
-            className="flex items-stretch self-stretch gap-1 [&_a]:inline-flex [&_a]:items-center [&_a]:gap-[9px] [&_a]:whitespace-nowrap [&_a]:border-b-[3px] [&_a]:border-transparent [&_a]:px-[18px] [&_a]:text-title [&_a]:font-semibold [&_a]:text-[#60798a] [&_a]:no-underline [&_a:hover]:bg-[#f7fafc] [&_a:hover]:text-[#284e69] [&_a.active]:border-primary [&_a.active]:text-[#315bbe] max-[760px]:[&_a]:px-[9px] max-[760px]:[&_a]:text-body max-[760px]:[&_svg]:hidden"
-            aria-label="工作区"
+            className="flex items-stretch self-stretch gap-1 [&_a]:inline-flex [&_a]:items-center [&_a]:gap-[9px] [&_a]:whitespace-nowrap [&_a]:border-b-[3px] [&_a]:border-transparent [&_a]:px-[18px] [&_a]:text-title [&_a]:font-semibold [&_a]:text-[#60798a] [&_a]:no-underline [&_a:hover]:bg-[#f7fafc] [&_a:hover]:text-[#284e69] [&_a.active]:border-primary [&_a.active]:text-[#315bbe] max-[760px]:[&_a]:px-[9px] max-[480px]:[&_a]:px-2 max-[760px]:[&_a]:text-body max-[760px]:[&_svg]:hidden"
+            aria-label={t("common:workspace")}
           >
             <NavLink to="/" end>
               <Braces aria-hidden="true" size={18} />
-              JSON 编辑
+              {t("common:editorNav")}
             </NavLink>
             <NavLink to="/diff">
               <GitCompare aria-hidden="true" size={18} />
               JSON Diff
             </NavLink>
           </nav>
+          <LanguageSwitcher />
         </header>
         <main
           id="main-content"
@@ -141,12 +146,12 @@ export default function App() {
             <Info aria-hidden="true" size={19} />
           )}
           <span className="flex-1 [overflow-wrap:anywhere]">
-            {notice.message}
+            {translateMessage(notice.message)}
           </span>
           <Button
             variant="unstyled"
             className="grid size-7 flex-none place-items-center rounded-md border-0 bg-transparent p-0 text-inherit hover:bg-[#27465d0b]"
-            aria-label="关闭提示"
+            aria-label={t("common:closeNotice")}
             onClick={() => {
               clearTimeout(toastTimer.current);
               setNotice(null);

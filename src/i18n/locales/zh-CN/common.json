@@ -1,0 +1,23 @@
+{
+  "skipContent": "跳到主内容",
+  "home": "Awesome JSON 首页",
+  "workspace": "工作区",
+  "editorNav": "JSON 编辑",
+  "closeNotice": "关闭提示",
+  "copyFailed": "自动复制失败，请选中内容后按 Ctrl/Cmd+C 复制。",
+  "format": "格式化",
+  "copy": "复制",
+  "clear": "清空",
+  "copied": "已复制",
+  "root": "根节点",
+  "collapse": "收起",
+  "expand": "展开",
+  "closeDialog": "关闭弹窗",
+  "copyContent": "复制内容",
+  "language": "界面语言",
+  "inputRequired": "请先输入{{label}}。",
+  "errorLocation": "（第 {{line}} 行，第 {{column}} 列）",
+  "unclosedGuidance": "请检查引号和括号是否闭合。",
+  "syntaxGuidance": "请检查该位置附近的引号、逗号和括号。",
+  "jsonError": "{{label}} 格式有误{{location}}。{{guidance}}"
+}

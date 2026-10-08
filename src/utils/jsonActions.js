@@ -1,21 +1,26 @@
+import { translateMessage } from '../i18n/message.js'
 import { describeJsonError } from './jsonError.js'
 
 export function parseJsonInput(text, label = 'JSON') {
-  if (!text.trim()) return { ok: false, message: '请先输入' + label + '。', kind: 'warning' }
+  if (!text.trim()) {
+    const translation = { key: 'common:inputRequired', values: { label } }
+    return { ok: false, message: translateMessage(translation), translation, kind: 'warning' }
+  }
   try {
     return { ok: true, value: JSON.parse(text) }
   } catch (error) {
-    return { ok: false, message: describeJsonError(error, text, label), kind: 'error' }
+    const translation = describeJsonError(error, text, label, true)
+    return { ok: false, message: translateMessage(translation), translation, kind: 'error' }
   }
 }
 
-export function jsonError(text) {
+export function jsonError(text, descriptor = false) {
   if (!text.trim()) return ''
   try {
     JSON.parse(text)
     return ''
   } catch (error) {
-    return describeJsonError(error, text)
+    return describeJsonError(error, text, 'JSON', descriptor)
   }
 }
 

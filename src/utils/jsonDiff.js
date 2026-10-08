@@ -1,3 +1,5 @@
+import i18n from '../i18n/index.js'
+
 /**
  * JSON Diff 核心引擎
  * 递归对比两个 JSON 对象，生成差异列表
@@ -24,7 +26,7 @@ function pathJoin(...parts) {
  * @param {*} left - 左侧值
  * @param {*} right - 右侧值
  * @param {string} path - 当前 JSON 路径
- * @returns {Array<{path: string, leftPath: string, rightPath: string, type: string, msg: string}>}
+ * @returns {Array<{path: string, leftPath: string, rightPath: string, type: string, messageKey: string, messageValues: object}>}
  */
 export function diffJson(left, right, path = '/') {
   const diffs = []
@@ -40,7 +42,8 @@ function diffVal(left, right, path, diffs) {
     diffs.push({
       path,
       type: DiffType.TYPE,
-      msg: `类型不同: 左侧为 ${leftType}，右侧为 ${rightType}`,
+      messageKey: 'typeDescription',
+      messageValues: { leftType, rightType },
       leftVal: left,
       rightVal: right,
     })
@@ -59,7 +62,8 @@ function diffVal(left, right, path, diffs) {
         diffs.push({
           path,
           type: DiffType.EQUALITY,
-          msg: `值不等: ${JSON.stringify(left)} ≠ ${JSON.stringify(right)}`,
+          messageKey: 'valueDescription',
+          messageValues: { left: JSON.stringify(left), right: JSON.stringify(right) },
           leftVal: left,
           rightVal: right,
         })
@@ -81,7 +85,8 @@ function diffObject(left, right, path, diffs) {
       diffs.push({
         path: childPath,
         type: DiffType.MISSING,
-        msg: `右侧缺少属性: ${key}`,
+        messageKey: 'missingRightProperty',
+        messageValues: { key },
         leftVal: left[key],
         rightVal: undefined,
       })
@@ -89,7 +94,8 @@ function diffObject(left, right, path, diffs) {
       diffs.push({
         path: childPath,
         type: DiffType.MISSING,
-        msg: `左侧缺少属性: ${key}`,
+        messageKey: 'missingLeftProperty',
+        messageValues: { key },
         leftVal: undefined,
         rightVal: right[key],
       })
@@ -109,7 +115,8 @@ function diffArray(left, right, path, diffs) {
       diffs.push({
         path: childPath,
         type: DiffType.MISSING,
-        msg: `左侧缺少元素 [${i}]`,
+        messageKey: 'missingLeftItem',
+        messageValues: { index: i },
         leftVal: undefined,
         rightVal: right[i],
       })
@@ -117,7 +124,8 @@ function diffArray(left, right, path, diffs) {
       diffs.push({
         path: childPath,
         type: DiffType.MISSING,
-        msg: `右侧缺少元素 [${i}]`,
+        messageKey: 'missingRightItem',
+        messageValues: { index: i },
         leftVal: left[i],
         rightVal: undefined,
       })
@@ -237,4 +245,8 @@ export function markDiffLines(lines, diffs, side) {
 
     return { ...line, diffType, diffIndex }
   })
+}
+
+export function describeDiff(diff) {
+  return i18n.t(`diff:${diff.messageKey}`, diff.messageValues)
 }

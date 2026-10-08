@@ -8,6 +8,7 @@
 - `src/components/JsonTree.jsx`：JSON 树形查看封装。
 - `src/components/CustomSearchPanel.js`：CodeMirror 搜索替换面板。
 - `src/lib/`：剪贴板、滚动和共享样式等公共工具。
+- `src/i18n/`：国际化配置及按功能拆分的语言包。
 - `src/utils/`：JSON 处理、差异比较与示例数据。
 - `tests/`：公共工具的回归测试。
 
@@ -39,6 +40,20 @@
 | `text-brand` | 品牌 | 20px |
 
 辅助文字使用 `text-muted-foreground`，常规文字使用默认字重，操作与标题使用 600，重点信息使用 700。编辑器与搜索面板复用公共字体变量；编辑器、JSON 树和 Diff 代码引用公共语法颜色变量。
+
+## 多语言
+
+界面使用 i18next、react-i18next 和浏览器语言检测插件，支持简体中文与英文。右上角菜单可即时切换语言；选择保存在 `localStorage` 的 `awesome-json-language` 中。首次使用读取浏览器语言，中文地区变体统一映射到 `zh-CN`，不支持的语言回退为中文。页面 `lang` 属性同步更新。
+
+语言包位于 `src/i18n/locales/<语言>/`，按 `common`、`editor`、`diff`、`search` 分组。React 组件通过 `useTranslation()` 获取 `t`，使用语义键及插值，例如 `t("editor:cursor", { line, column })`。数量文案使用 i18next 的 `_one` / `_other` 复数形式，避免拼接句子。
+
+新增语言时：
+
+1. 在 `src/i18n/locales/` 新建语言目录，补齐四个 JSON 文件，并按该语言的规则添加复数形式。
+2. 在 `src/i18n/index.js` 的 `supportedLanguages` 中登记语言代码、原生名称和窄屏简称。语言包自动导入，菜单自动增加选项。
+3. 运行测试并检查长文案、移动端和键盘操作；若新语言的复数类别不同，相应调整语言包键对齐测试。
+
+切换语言不重建工作区。错误提示和 Toast 保存消息键与参数，差异记录保存描述键及参数，在展示或复制摘要时翻译。CodeMirror 搜索面板监听语言变化，在原 DOM 上更新输入提示、按钮、Tooltip 和计数，并在销毁时取消监听。JSON 键名、值、路径和示例数据作为用户内容保留原样。
 
 ## 验证
 

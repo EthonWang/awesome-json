@@ -1,4 +1,6 @@
-export function describeJsonError(error, text, label = 'JSON') {
+import { translateMessage } from '../i18n/message.js'
+
+export function describeJsonError(error, text, label = 'JSON', descriptor = false) {
   const message = typeof error === 'string' ? error : error?.message || ''
   const match = message.match(/line\s+(\d+)\s+column\s+(\d+)/i)
   let line = match ? Number(match[1]) : null
@@ -24,10 +26,12 @@ export function describeJsonError(error, text, label = 'JSON') {
     }
   }
 
-  const location = line === null ? '' : `（第 ${line} 行，第 ${column} 列）`
-  const guidance = /unexpected end|unterminated|end of data/i.test(message)
-    ? '请检查引号和括号是否闭合。'
-    : '请检查该位置附近的引号、逗号和括号。'
-
-  return `${label} 格式有误${location}。${guidance}`
+  const location = line === null ? '' : { key: 'common:errorLocation', values: { line, column } }
+  const guidance = {
+    key: /unexpected end|unterminated|end of data/i.test(message)
+      ? 'common:unclosedGuidance'
+      : 'common:syntaxGuidance',
+  }
+  const result = { key: 'common:jsonError', values: { label, location, guidance } }
+  return descriptor ? result : translateMessage(result)
 }

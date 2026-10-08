@@ -1,3 +1,4 @@
+import i18n from "@/i18n";
 import {
   ArrowUp,
   ArrowDown,
@@ -8,7 +9,7 @@ import {
 } from "lucide-react";
 import { createTooltipControl } from "./ui/tooltip-control.jsx";
 import { EditorView } from "@codemirror/view";
-import { StateEffect } from "@codemirror/state";
+import { openReplaceEffect, searchPanelState } from "../lib/searchPanelState.js";
 import {
   SearchQuery,
   setSearchQuery,
@@ -24,7 +25,7 @@ import {
 /**
  * 自定义 StateEffect：通知面板展开替换行
  */
-const openReplaceEffect = StateEffect.define();
+
 
 /**
  * Cmd+H 命令：打开搜索面板并展开替换行
@@ -200,7 +201,7 @@ class CustomSearchPanel {
     this.caseSensitive = false;
     this.regexp = false;
     this.wholeWord = false;
-    this.showReplace = false;
+    this.showReplace = view.state.field(searchPanelState, false) ?? false;
 
     // 匹配计数状态
     this.matchCount = 0;
@@ -211,6 +212,8 @@ class CustomSearchPanel {
 
     // 构建 DOM
     this.dom = this._buildDOM();
+    this.onLanguageChange = () => this._translate();
+    i18n.on("languageChanged", this.onLanguageChange);
     this.top = true;
 
     // 同步已有的搜索状态
@@ -229,8 +232,8 @@ class CustomSearchPanel {
         if (effect.is(setSearchQuery) && !this._internalCommit) {
           this._syncFromState();
         }
-        if (effect.is(openReplaceEffect) && !this.showReplace) {
-          this._toggleReplace();
+        if (effect.is(openReplaceEffect)) {
+          this._setReplaceExpanded(effect.value);
         }
       }
     }
@@ -246,6 +249,7 @@ class CustomSearchPanel {
   }
 
   destroy() {
+    i18n.off("languageChanged", this.onLanguageChange);
     this._countAbortId++;
     clearTimeout(this._searchDebounce);
     this.controls.forEach((control) => control.destroy());
@@ -266,9 +270,9 @@ class CustomSearchPanel {
     // 展开替换的三角按钮
     this.toggleReplaceBtn = this._iconBtn(
       ChevronRight,
-      "展开替换",
+      this.showReplace ? "search:collapseReplace" : "search:expandReplace",
       () => this._toggleReplace(),
-      { className: "cm-replace-toggle", expanded: false },
+      { className: "cm-replace-toggle", expanded: this.showReplace },
     );
     searchRow.appendChild(this.toggleReplaceBtn);
 
@@ -280,8 +284,8 @@ class CustomSearchPanel {
 
     this.searchInput = this._el("input", {
       type: "text",
-      placeholder: "搜索…",
-      "aria-label": "搜索 JSON",
+      placeholder: i18n.t("search:placeholder"),
+      "aria-label": i18n.t("search:label"),
       name: "json-search",
       autocomplete: "off",
       spellcheck: "false",
@@ -305,17 +309,17 @@ class CustomSearchPanel {
     searchRow.appendChild(searchInputWrap);
 
     // Toggle 按钮：Aa, .*, W
-    this.caseSensitiveBtn = this._toggleBtn("Aa", "区分大小写", () => {
+    this.caseSensitiveBtn = this._toggleBtn("Aa", "search:caseSensitive", () => {
       this.caseSensitive = !this.caseSensitive;
       this._updateToggleState(this.caseSensitiveBtn, this.caseSensitive);
       this._commit();
     });
-    this.regexpBtn = this._toggleBtn(".*", "正则表达式", () => {
+    this.regexpBtn = this._toggleBtn(".*", "search:regexp", () => {
       this.regexp = !this.regexp;
       this._updateToggleState(this.regexpBtn, this.regexp);
       this._commit();
     });
-    this.wholeWordBtn = this._toggleBtn("W", "全词匹配", () => {
+    this.wholeWordBtn = this._toggleBtn("W", "search:wholeWord", () => {
       this.wholeWord = !this.wholeWord;
       this._updateToggleState(this.wholeWordBtn, this.wholeWord);
       this._commit();
@@ -326,15 +330,15 @@ class CustomSearchPanel {
     searchRow.appendChild(this.wholeWordBtn);
 
     // 上一个 / 下一个 / 关闭
-    const prevBtn = this._iconBtn(ArrowUp, "上一个 (Shift+Enter)", () => {
+    const prevBtn = this._iconBtn(ArrowUp, "search:previous", () => {
       findPrevious(this.view);
       this.view.focus();
     });
-    const nextBtn = this._iconBtn(ArrowDown, "下一个 (Enter)", () => {
+    const nextBtn = this._iconBtn(ArrowDown, "search:next", () => {
       findNext(this.view);
       this.view.focus();
     });
-    const closeBtn = this._iconBtn(X, "关闭 (Esc)", () => {
+    const closeBtn = this._iconBtn(X, "search:close", () => {
       closeSearchPanel(this.view);
       this.view.focus();
     });
@@ -348,7 +352,7 @@ class CustomSearchPanel {
     // ── 替换行（默认隐藏）──
     this.replaceRow = this._el("div", {
       className: "cm-replace-row",
-      hidden: "",
+      ...(this.showReplace ? {} : { hidden: "" }),
     });
 
     const replaceInputWrap = this._el("div", {
@@ -358,8 +362,8 @@ class CustomSearchPanel {
 
     this.replaceInput = this._el("input", {
       type: "text",
-      placeholder: "替换…",
-      "aria-label": "替换为",
+      placeholder: i18n.t("search:replacePlaceholder"),
+      "aria-label": i18n.t("search:replaceLabel"),
       name: "json-replace",
       autocomplete: "off",
       spellcheck: "false",
@@ -374,11 +378,11 @@ class CustomSearchPanel {
     this.replaceRow.appendChild(replaceInputWrap);
 
     // 替换当前 / 替换全部
-    const replaceBtn = this._iconBtn(Replace, "替换当前", () => {
+    const replaceBtn = this._iconBtn(Replace, "search:replace", () => {
       replaceNext(this.view);
       this.view.focus();
     });
-    const replaceAllBtn = this._iconBtn(ReplaceAll, "替换全部", () => {
+    const replaceAllBtn = this._iconBtn(ReplaceAll, "search:replaceAll", () => {
       replaceAll(this.view);
       this.view.focus();
     });
@@ -480,7 +484,7 @@ class CustomSearchPanel {
       this.matchCount = 0;
       this.currentMatch = 0;
       this.counting = false;
-      this.matchLabel.textContent = "无效正则";
+      this.matchLabel.textContent = i18n.t("search:invalidRegexp");
       this.matchLabel.dataset.error = "true";
       this._updateSearchStatus();
       return;
@@ -586,19 +590,19 @@ class CustomSearchPanel {
       return;
     }
     if (this.counting) {
-      this.matchLabel.textContent = "计算中...";
+      this.matchLabel.textContent = i18n.t("search:counting");
       this.matchLabel.dataset.error = "false";
       return;
     }
     if (this.matchCount === 0) {
-      this.matchLabel.textContent = "无结果";
+      this.matchLabel.textContent = i18n.t("search:noResults");
       this.matchLabel.dataset.error = "true";
       return;
     }
     if (this.currentMatch > 0) {
       this.matchLabel.textContent = `${this.currentMatch} / ${this.matchCount}`;
     } else {
-      this.matchLabel.textContent = `${this.matchCount} 个结果`;
+      this.matchLabel.textContent = i18n.t("search:resultCount", { count: this.matchCount });
     }
     this.matchLabel.dataset.error = "false";
   }
@@ -615,11 +619,15 @@ class CustomSearchPanel {
   }
 
   _toggleReplace() {
-    this.showReplace = !this.showReplace;
+    this.view.dispatch({ effects: openReplaceEffect.of(!this.showReplace) });
+  }
+
+  _setReplaceExpanded(expanded) {
+    this.showReplace = expanded;
     this.replaceRow.hidden = !this.showReplace;
     this._updateControl(this.toggleReplaceBtn, {
       expanded: this.showReplace,
-      label: this.showReplace ? "收起替换" : "展开替换",
+      label: i18n.t(this.showReplace ? "search:collapseReplace" : "search:expandReplace"),
     });
     if (this.showReplace) {
       this.replaceInput.focus();
@@ -630,6 +638,21 @@ class CustomSearchPanel {
 
   _updateToggleState(btn, active) {
     this._updateControl(btn, { pressed: active });
+  }
+
+  _translate() {
+    this.searchInput.placeholder = i18n.t("search:placeholder");
+    this.searchInput.setAttribute("aria-label", i18n.t("search:label"));
+    this.replaceInput.placeholder = i18n.t("search:replacePlaceholder");
+    this.replaceInput.setAttribute("aria-label", i18n.t("search:replaceLabel"));
+    this.controls.forEach((control) => control.update({
+      label: i18n.t(control.labelKey),
+      ...(control.hintKey ? { hint: i18n.t(control.hintKey) } : {}),
+    }));
+    this._updateControl(this.toggleReplaceBtn, {
+      label: i18n.t(this.showReplace ? "search:collapseReplace" : "search:expandReplace"),
+    });
+    this._startAsyncCount();
   }
 
   // ─── DOM 辅助工具 ───
@@ -654,18 +677,20 @@ class CustomSearchPanel {
 
   _toggleBtn(text, label, onClick) {
     const hints = {
-      区分大小写: "只匹配大小写完全相同的内容",
-      正则表达式: "使用正则表达式搜索，例如 \\d+ 匹配数字",
-      全词匹配: "只匹配完整单词",
+      "search:caseSensitive": "search:caseHint",
+      "search:regexp": "search:regexpHint",
+      "search:wholeWord": "search:wholeWordHint",
     };
     const control = createTooltipControl({
       text,
-      label,
-      hint: hints[label],
+      label: i18n.t(label),
+      hint: i18n.t(hints[label]),
       onClick,
       className: "cm-search-toggle",
       pressed: false,
     });
+    control.labelKey = label;
+    control.hintKey = hints[label];
     this.controls.push(control);
     return control.dom;
   }
@@ -673,11 +698,12 @@ class CustomSearchPanel {
   _iconBtn(Icon, label, onClick, options = {}) {
     const control = createTooltipControl({
       Icon,
-      label,
+      label: i18n.t(label),
       onClick,
       ...options,
       className: `cm-search-icon ${options.className ?? ""}`,
     });
+    control.labelKey = label;
     this.controls.push(control);
     return control.dom;
   }

@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { copyText } from "@/lib/clipboard";
 import { scrollBehavior } from "@/lib/scroll";
 import { surface, paneHeading, fileEmblem } from "@/lib/workspaceStyles";
@@ -43,7 +44,8 @@ function SourcePane({
   emptyInputs,
   expandedInput,
 }) {
-  const label = side === "left" ? "原始 JSON" : "目标 JSON";
+  const { t } = useTranslation();
+  const label = side === "left" ? t("diff:left") : t("diff:right");
   return (
     <section
       className={cn(
@@ -65,11 +67,11 @@ function SourcePane({
         </div>
         <div className="flex min-h-0 flex-wrap items-center gap-0.5 p-0 ml-auto max-[420px]:gap-0">
           {[
-            ["format", "格式化", Braces, "按缩进整理这一侧的 JSON"],
-            ["view", "可视化", Eye, "以可展开的树形结构查看 JSON"],
-            ["copy", "复制", Clipboard, "复制这一侧的全部内容"],
-            ["edit", "编辑", Pencil, "在编辑页面的新标签页中打开内容"],
-            ["clear", "清空", Trash2, "清空这一侧的内容"],
+            ["format", t("common:format"), Braces, t("diff:formatHint")],
+            ["view", t("diff:view"), Eye, t("diff:viewHint")],
+            ["copy", t("common:copy"), Clipboard, t("diff:copyHint")],
+            ["edit", t("diff:edit"), Pencil, t("diff:editHint")],
+            ["clear", t("common:clear"), Trash2, t("diff:clearHint")],
           ].map(([action, title, Icon, hint]) => (
             <Button
               key={action}
@@ -100,7 +102,7 @@ function SourcePane({
           value={value}
           onChange={(text) => onChange(side, text)}
           active={active}
-          placeholder={"在此处输入" + label}
+          placeholder={t("diff:inputPlaceholder", { label })}
         />
       </div>
     </section>
@@ -113,6 +115,7 @@ export default function DiffPage({
   onOpenEditor,
   active = true,
 }) {
+  const { t } = useTranslation();
   const [sources, setSources] = useState({ left: "", right: "" });
   const [snapshot, setSnapshot] = useState(null);
   const [stale, setStale] = useState(false);
@@ -131,9 +134,8 @@ export default function DiffPage({
   };
 
   const parseSide = (side) => {
-    const label = side === "left" ? "原始 JSON" : "目标 JSON";
-    const parsed = parseJsonInput(sources[side], label);
-    if (!parsed.ok) showToast(parsed.message, parsed.kind);
+    const parsed = parseJsonInput(sources[side], { key: side === "left" ? "diff:left" : "diff:right" });
+    if (!parsed.ok) showToast(parsed.translation, parsed.kind);
     return parsed;
   };
 
@@ -144,7 +146,7 @@ export default function DiffPage({
     if (!right.ok) return;
     setSnapshot({ left: left.value, right: right.value });
     setStale(false);
-    showToast("对比已更新。", "success");
+    showToast({ key: "diff:updated" }, "success");
     requestAnimationFrame(() =>
       resultRef.current?.scrollIntoView({
         behavior: scrollBehavior(),
@@ -157,7 +159,7 @@ export default function DiffPage({
     setSources({ left: sampleLeftText, right: sampleRightText });
     setSnapshot({ left: sampleLeft, right: sampleRight });
     setStale(false);
-    showToast("已载入示例数据。", "success");
+    showToast({ key: "diff:sampleLoaded" }, "success");
   };
 
   const clearAll = () => {
@@ -169,7 +171,7 @@ export default function DiffPage({
   };
 
   const onAction = async (side, action) => {
-    const label = side === "left" ? "原始 JSON" : "目标 JSON";
+    const label = side === "left" ? t("diff:left") : t("diff:right");
     const text = sources[side];
     if (action === "clear") {
       setSide(side, "");
@@ -182,9 +184,9 @@ export default function DiffPage({
     if (action === "copy") {
       try {
         await copyText(text);
-        showToast("已复制" + label + "。", "success");
+        showToast({ key: "diff:copiedSide", values: { label: { key: side === "left" ? "diff:left" : "diff:right" } } }, "success");
       } catch {
-        showToast("自动复制失败，请选中内容后按 Ctrl/Cmd+C 复制。", "error");
+        showToast({ key: "common:copyFailed" }, "error");
       }
       return;
     }
@@ -194,7 +196,7 @@ export default function DiffPage({
       setSide(side, JSON.stringify(parsed.value, null, 2));
     if (action === "view") {
       viewerOpenerRef.current = document.activeElement;
-      setViewer({ label, data: parsed.value });
+      setViewer({ side, data: parsed.value });
     }
   };
 
@@ -214,11 +216,11 @@ export default function DiffPage({
             <Button
               variant="outline"
               size="sm"
-              tooltip="载入一组示例 JSON 并查看对比结果"
+              tooltip={t("diff:loadSampleHint")}
               onClick={loadSample}
             >
               <Sparkles aria-hidden="true" size={15} />
-              载入示例
+              {t("diff:loadSample")}
             </Button>
             {snapshot && (
               <Button
@@ -226,8 +228,8 @@ export default function DiffPage({
                 size="sm"
                 tooltip={
                   inputCollapsed
-                    ? "展开输入以修改 JSON"
-                    : "收起输入，为对比结果腾出空间"
+                    ? t("diff:expandInputHint")
+                    : t("diff:collapseInputHint")
                 }
                 aria-expanded={!inputCollapsed}
                 aria-controls="diff-source-inputs"
@@ -238,7 +240,7 @@ export default function DiffPage({
                 ) : (
                   <ChevronUp aria-hidden="true" size={15} />
                 )}
-                {inputCollapsed ? "展开输入" : "收起输入"}
+                {inputCollapsed ? t("diff:expandInput") : t("diff:collapseInput")}
               </Button>
             )}
           </div>
@@ -246,20 +248,20 @@ export default function DiffPage({
             <Button
               variant="destructive"
               size="sm"
-              tooltip="清空两侧输入和对比结果"
+              tooltip={t("diff:clearBothHint")}
               onClick={clearAll}
             >
               <Trash2 aria-hidden="true" size={15} />
-              清空两侧
+              {t("diff:clearBoth")}
             </Button>
             <Button
               variant="default"
               size="sm"
-              tooltip="对比两侧 JSON 的内容差异"
+              tooltip={t("diff:compareHint")}
               onClick={compare}
             >
               <GitCompare aria-hidden="true" size={16} />
-              {snapshot ? "重新对比" : "开始对比"}
+              {snapshot ? t("diff:compareAgain") : t("diff:compare")}
             </Button>
           </div>
         </div>
@@ -297,14 +299,16 @@ export default function DiffPage({
           className="flex items-center justify-between gap-[15px] mb-[15px] rounded-[9px] border border-[#edd9af] bg-[#fff8e9] px-3.5 py-[11px] text-action text-[#946a33]"
           role="status"
         >
-          <span>输入内容已变化，下面显示的是上一次对比结果。</span>
+          <span>
+            {t("diff:stale")}
+          </span>
           <Button
             variant="unstyled"
             className="whitespace-nowrap border-0 bg-transparent font-semibold text-[#925c20] hover:underline"
-            tooltip="对比两侧 JSON 的内容差异"
+            tooltip={t("diff:compareHint")}
             onClick={compare}
           >
-            重新对比
+            {t("diff:compareAgain")}
           </Button>
         </div>
       )}
@@ -324,15 +328,15 @@ export default function DiffPage({
           <div className="flex min-h-[335px] flex-col items-center justify-center gap-[11px] rounded-xl border border-dashed border-[#bfd2de] bg-[#f9fcfe] text-center text-[#7993a2]">
             <FileJson aria-hidden="true" size={34} strokeWidth={1.4} />
             <h2 className="m-0 font-semibold text-pretty text-title text-[#35586f]">
-              暂无对比结果
+              {t("diff:empty")}
             </h2>
             <Button
               variant="default"
               size="sm"
-              tooltip="对比两侧 JSON 的内容差异"
+              tooltip={t("diff:compareHint")}
               onClick={compare}
             >
-              开始对比
+              {t("diff:compare")}
             </Button>
           </div>
         ) : null}
@@ -357,14 +361,14 @@ export default function DiffPage({
           <div className="flex min-h-[58px] flex-none items-center justify-between border-b border-border pl-[22px] pr-[17px]">
             <DialogTitle className="m-0 flex items-center gap-[9px] text-title">
               <FileJson aria-hidden="true" size={19} />
-              {viewer?.label} · 可视化
+              {t("diff:viewerTitle", { label: t(viewer?.side === "left" ? "diff:left" : "diff:right") })}
             </DialogTitle>
             <DialogClose asChild>
               <Button
                 variant="ghost"
                 size="icon"
-                tooltip="关闭可视化，返回输入区"
-                aria-label="关闭可视化"
+                tooltip={t("diff:closeViewHint")}
+                aria-label={t("diff:closeView")}
               >
                 <X aria-hidden="true" size={18} />
               </Button>

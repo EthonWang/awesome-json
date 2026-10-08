@@ -1,3 +1,5 @@
+import { useTranslation } from "react-i18next";
+import i18n from "@/i18n";
 import {
   forwardRef,
   useCallback,
@@ -51,6 +53,7 @@ import {
   searchPanelTheme,
   openSearchPanelWithReplace,
 } from "./CustomSearchPanel.js";
+import { searchPanelState } from "../lib/searchPanelState.js";
 
 function foldDescription(state, range) {
   const before =
@@ -71,6 +74,14 @@ function foldDescription(state, range) {
   } catch {
     return { type, count: null };
   }
+}
+
+function foldPlaceholderText({ type, count }) {
+  const brackets = type === "array" ? ["[", "]"] : ["{", "}"];
+  const summary = count === null
+    ? "…"
+    : "… " + i18n.t(type === "array" ? "diff:itemCount" : "editor:keyCount", { count });
+  return `${brackets[0]} ${summary} ${brackets[1]}`;
 }
 
 const jsonHighlight = HighlightStyle.define([
@@ -125,6 +136,27 @@ const editorTheme = EditorView.theme({
 
 function createExtensions(placeholderText, label) {
   return [
+    EditorState.phrases.of({
+      "Folded lines": i18n.t("editor:foldedLines"),
+      "Unfolded lines": i18n.t("editor:unfoldedLines"),
+      "to": i18n.t("editor:rangeTo"),
+      "folded code": i18n.t("editor:foldedCode"),
+      "unfold": i18n.t("editor:unfold"),
+      "Fold line": i18n.t("editor:foldLine"),
+      "Unfold line": i18n.t("editor:unfoldLine"),
+      "Completions": i18n.t("editor:completions"),
+      "Control character": i18n.t("editor:controlCharacter"),
+      "Selection deleted": i18n.t("editor:selectionDeleted"),
+      "current match": i18n.t("editor:currentMatch"),
+      "on line": i18n.t("editor:onLine"),
+      "Go to line": i18n.t("editor:goToLine"),
+      "go": i18n.t("editor:go"),
+      "replaced match on line $": i18n.t("editor:replacedMatchOnLine"),
+      "replaced $ matches": i18n.t("editor:replacedMatches"),
+      "Diagnostics": i18n.t("editor:diagnostics"),
+      "No diagnostics": i18n.t("editor:noDiagnostics"),
+      "close": i18n.t("editor:close"),
+    }),
     EditorView.contentAttributes.of({
       "aria-label": label,
       "aria-placeholder": placeholderText,
@@ -138,15 +170,10 @@ function createExtensions(placeholderText, label) {
       placeholderDOM(_view, onclick, prepared) {
         const element = document.createElement("span");
         element.className = "cm-fold-placeholder";
-        element.textContent =
-          prepared.count === null
-            ? prepared.type === "array"
-              ? "[ … ]"
-              : "{ … }"
-            : prepared.type === "array"
-              ? "[ … " + prepared.count + " items ]"
-              : "{ … " + prepared.count + " keys }";
-        element.setAttribute("aria-label", "展开折叠的 JSON 节点");
+        element.dataset.jsonFoldType = prepared.type;
+        element.dataset.jsonFoldCount = prepared.count ?? "";
+        element.textContent = foldPlaceholderText(prepared);
+        element.setAttribute("aria-label", i18n.t("editor:unfoldNode"));
         element.onclick = onclick;
         return element;
       },
@@ -157,7 +184,7 @@ function createExtensions(placeholderText, label) {
         marker.textContent = open ? "⌄" : "›";
         marker.setAttribute(
           "aria-label",
-          open ? "收起 JSON 节点" : "展开 JSON 节点",
+          open ? i18n.t("editor:collapseNode") : i18n.t("editor:expandNode"),
         );
         return marker;
       },
@@ -176,6 +203,7 @@ function createExtensions(placeholderText, label) {
     highlightSelectionMatches(),
     search({ top: true, createPanel: createSearchPanel }),
     searchPanelTheme,
+    searchPanelState,
     keymap.of([
       ...closeBracketsKeymap,
       ...defaultKeymap,
@@ -198,18 +226,21 @@ const CodeEditor = forwardRef(function CodeEditor(
     onChange,
     onCursorChange,
     active = true,
-    label = "JSON 编辑器",
-    placeholder = "在此处输入 JSON",
+    label,
+    placeholder,
     className = "",
   },
   ref,
 ) {
+  const { t, i18n: locale } = useTranslation();
+  label ??= t("editor:title");
+  placeholder ??= t("editor:placeholder");
   const viewRef = useRef(null);
   const onCursorChangeRef = useRef(onCursorChange);
   onCursorChangeRef.current = onCursorChange;
   const extensions = useMemo(
     () => createExtensions(placeholder, label),
-    [placeholder, label],
+    [placeholder, label, locale.resolvedLanguage],
   );
 
   const onUpdate = useCallback((update) => {
@@ -245,6 +276,18 @@ const CodeEditor = forwardRef(function CodeEditor(
     }),
     [],
   );
+
+  useEffect(() => {
+    // Existing folded widgets survive reconfiguration. Refresh the custom
+    // placeholder DOM without changing folded ranges or undo history.
+    viewRef.current?.dom.querySelectorAll(".cm-fold-placeholder").forEach((element) => {
+      element.textContent = foldPlaceholderText({
+        type: element.dataset.jsonFoldType,
+        count: element.dataset.jsonFoldCount === "" ? null : Number(element.dataset.jsonFoldCount),
+      });
+      element.setAttribute("aria-label", t("editor:unfoldNode"));
+    });
+  }, [locale.resolvedLanguage, t]);
 
   useEffect(() => {
     if (active) requestAnimationFrame(() => viewRef.current?.requestMeasure());

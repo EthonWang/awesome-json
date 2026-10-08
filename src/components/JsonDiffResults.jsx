@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { copyText } from "@/lib/clipboard";
 import { scrollBehavior } from "@/lib/scroll";
 import { surface, paneHeading, fileEmblem } from "@/lib/workspaceStyles";
@@ -17,6 +18,7 @@ import {
   diffJson,
   formatJsonWithPaths,
   markDiffLines,
+  describeDiff,
 } from "../utils/jsonDiff.js";
 
 const TOKEN =
@@ -67,18 +69,18 @@ function buildComparison(left, right) {
 }
 
 const filterOptions = [
-  ["all", "全部"],
-  ["added", "新增"],
-  ["removed", "缺失"],
-  ["changed", "修改"],
-  ["type", "类型"],
+  ["all", "diff:all"],
+  ["added", "diff:added"],
+  ["removed", "diff:removed"],
+  ["changed", "diff:changed"],
+  ["type", "diff:type"],
 ];
 
 const kindLabels = {
-  added: "新增",
-  removed: "缺失",
-  changed: "修改",
-  type: "类型",
+  added: "diff:added",
+  removed: "diff:removed",
+  changed: "diff:changed",
+  type: "diff:type",
 };
 
 export default function JsonDiffResults({
@@ -87,6 +89,7 @@ export default function JsonDiffResults({
   showToast,
   active = true,
 }) {
+  const { t } = useTranslation();
   const { diffs, leftLines, rightLines } = useMemo(
     () => buildComparison(snapshot.left, snapshot.right),
     [snapshot],
@@ -218,7 +221,7 @@ export default function JsonDiffResults({
           role={enabled ? "button" : undefined}
           tabIndex={enabled ? 0 : undefined}
           aria-label={
-            enabled ? "查看差异：" + diffs[line.diffIndex].msg : undefined
+            enabled ? t("diff:viewDifference", { message: describeDiff(diffs[line.diffIndex]) }) : undefined
           }
           onClick={enabled ? () => select(line.diffIndex) : undefined}
           onKeyDown={
@@ -244,12 +247,12 @@ export default function JsonDiffResults({
     });
 
   const copySummary = async () => {
-    const text = diffs.map((diff) => diff.path + "　" + diff.msg).join("\n");
+    const text = diffs.map((diff) => diff.path + "  " + describeDiff(diff)).join("\n");
     try {
-      await copyText(text || "两侧 JSON 语义完全相同");
-      showToast("已复制差异摘要。", "success");
+      await copyText(text || t("diff:identical"));
+      showToast({ key: "diff:summaryCopied" }, "success");
     } catch {
-      showToast("自动复制失败，请选中内容后按 Ctrl/Cmd+C 复制。", "error");
+      showToast({ key: "common:copyFailed" }, "error");
     }
   };
 
@@ -257,7 +260,7 @@ export default function JsonDiffResults({
     <section
       ref={sectionRef}
       className="result-workspace"
-      aria-label="JSON 差异结果"
+      aria-label={t("diff:results")}
     >
       <div
         className={cn(
@@ -270,15 +273,17 @@ export default function JsonDiffResults({
           <div className="flex min-h-[56px] py-2 items-center justify-between gap-2.5 border-b border-border pl-5 pr-[18px] max-[760px]:h-auto max-[760px]:min-h-[100px] max-[760px]:flex-col max-[760px]:items-stretch max-[760px]:gap-1.5 max-[760px]:px-2.5 max-[760px]:py-2">
             <div className="flex items-center gap-[9px] min-w-0 flex-wrap text-action text-[#557083] [&_strong]:flex-none [&_strong]:text-body [&_strong]:text-foreground">
               <span className="size-2 flex-none rounded-full bg-[#2da69c] shadow-[0_0_0_4px_#e2f4f0]" />
-              <strong>对比完成</strong>
+              <strong>
+                {t("diff:completed")}
+              </strong>
               <span className="whitespace-nowrap tabular-nums">
                 {diffs.length
-                  ? "发现 " + diffs.length + " 处差异"
-                  : "两侧 JSON 语义完全相同"}
+                  ? t("diff:differenceCount", { count: diffs.length })
+                  : t("diff:identical")}
               </span>
               {diffs[selected] && (
                 <span className="min-w-0 max-w-[min(32vw,100%)] truncate rounded-[5px] bg-[#e8f0ff] px-2 py-1 font-mono text-caption text-[#315db4]">
-                  当前：{diffs[selected].path}
+                  {t("diff:currentPath", { path: diffs[selected].path })}
                 </span>
               )}
             </div>
@@ -286,32 +291,32 @@ export default function JsonDiffResults({
               <Button
                 variant="ghost"
                 size="sm"
-                tooltip="复制差异路径和变更说明"
+                tooltip={t("diff:copySummaryHint")}
                 onClick={copySummary}
               >
                 <Clipboard aria-hidden="true" size={14} />
-                复制摘要
+                {t("diff:copySummary")}
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 className="border border-[#b6caed] bg-[#edf3ff] text-[#315db4] [&_span]:text-caption"
                 tooltip={
-                  indexOpen ? "收起差异索引面板" : "展开索引，快速定位差异"
+                  indexOpen ? t("diff:collapseIndexHint") : t("diff:expandIndexHint")
                 }
                 aria-expanded={indexOpen}
                 aria-controls="diff-index"
                 onClick={() => setIndexOpen((open) => !open)}
               >
                 <ListFilter aria-hidden="true" size={16} />
-                {indexOpen ? "收起索引" : "展开索引"}{" "}
+                {indexOpen ? t("diff:collapseIndex") : t("diff:expandIndex")}{" "}
                 <span>{diffs.length}</span>
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
-                tooltip="关闭对比结果，保留输入内容"
-                aria-label="关闭对比结果"
+                tooltip={t("diff:closeResultsHint")}
+                aria-label={t("diff:closeResults")}
                 onClick={onClose}
               >
                 <X aria-hidden="true" size={15} />
@@ -322,7 +327,9 @@ export default function JsonDiffResults({
             <div className="diff-pane min-w-0 [&+&]:border-l [&+&]:border-border max-[760px]:[&+&]:border-l-0 max-[760px]:[&+&]:border-t">
               <div className={paneHeading}>
                 <span className={fileEmblem}>{"{ }"}</span>
-                <strong>原始 JSON</strong>
+                <strong>
+                  {t("diff:left")}
+                </strong>
               </div>
               <div
                 className="diff-code-scroll h-[clamp(680px,78vh,900px)] max-[760px]:h-[clamp(320px,50dvh,480px)] overflow-auto overscroll-contain pt-2.5 pb-3.5 [background:linear-gradient(90deg,#f6f9fb_0_48px,#fff_48px)] [scrollbar-width:thin] [scrollbar-color:#cbdbe4_transparent]"
@@ -334,7 +341,9 @@ export default function JsonDiffResults({
             <div className="diff-pane min-w-0 [&+&]:border-l [&+&]:border-border max-[760px]:[&+&]:border-l-0 max-[760px]:[&+&]:border-t">
               <div className={paneHeading}>
                 <span className={fileEmblem}>{"{ }"}</span>
-                <strong>目标 JSON</strong>
+                <strong>
+                  {t("diff:right")}
+                </strong>
               </div>
               <div
                 className="diff-code-scroll h-[clamp(680px,78vh,900px)] max-[760px]:h-[clamp(320px,50dvh,480px)] overflow-auto overscroll-contain pt-2.5 pb-3.5 [background:linear-gradient(90deg,#f6f9fb_0_48px,#fff_48px)] [scrollbar-width:thin] [scrollbar-color:#cbdbe4_transparent]"
@@ -348,27 +357,26 @@ export default function JsonDiffResults({
         <aside
           id="diff-index"
           className="absolute top-[80px] right-4 z-5 flex h-[min(690px,calc(100%-96px))] w-[clamp(310px,20vw,360px)] flex-col overflow-hidden rounded-[10px] border border-[#c9d9e3] bg-white shadow-[0_15px_42px_#17384b33] min-[1440px]:static min-[1440px]:h-auto min-[1440px]:max-h-[calc(clamp(680px,78vh,900px)+116px)] min-[1440px]:min-h-0 min-[1440px]:w-full min-[1440px]:rounded-[10px] min-[1440px]:shadow-[0_1px_3px_#1e496008] max-[760px]:top-[168px] max-[760px]:right-2 max-[760px]:h-[min(540px,calc(100%-184px))] max-[760px]:w-[min(310px,calc(100%-16px))]"
-          aria-label="差异索引"
+          aria-label={t("diff:index")}
           hidden={!indexOpen}
         >
           <div className="flex-none px-3.5 pt-[13px] pb-3">
             <div className="flex items-center justify-between gap-2.5">
               <h2 className="m-0 text-title font-semibold tracking-[-.03em]">
-                差异索引
+                {t("diff:index")}
               </h2>
               <Button
                 variant="ghost"
                 size="sm"
-                tooltip="收起差异索引面板"
+                tooltip={t("diff:collapseIndexHint")}
                 onClick={() => setIndexOpen(false)}
-              >
-                收起面板 <X aria-hidden="true" size={15} />
+              >{t("diff:collapsePanel")}<X aria-hidden="true" size={15} />
               </Button>
             </div>
             {diffs.length > 0 && (
               <div
                 className="flex flex-wrap gap-[5px] mt-2.5 tabular-nums"
-                aria-label="筛选差异"
+                aria-label={t("diff:filter")}
               >
                 {filterOptions.map(([type, label]) => (
                   <Button
@@ -387,7 +395,7 @@ export default function JsonDiffResults({
                       listRef.current?.scrollTo({ top: 0 });
                     }}
                   >
-                    {label} {counts[type]}
+                    {t(label)} {counts[type]}
                   </Button>
                 ))}
               </div>
@@ -399,34 +407,32 @@ export default function JsonDiffResults({
               aria-live="polite"
             >
               <small className="mb-2 block tabular-nums">
-                当前差异　{visible.indexOf(selected) + 1} / {visible.length}
+                {t("diff:currentDifference", { current: visible.indexOf(selected) + 1, total: visible.length })}
               </small>
               <div className="mb-3 flex gap-[7px]">
                 <Button
                   variant="navigation"
                   size="compact"
                   className="flex-1"
-                  tooltip="定位上一处差异"
+                  tooltip={t("diff:previousHint")}
                   onClick={() => move(-1)}
                   disabled={visible.indexOf(selected) <= 0}
                 >
                   <ArrowUp aria-hidden="true" size={15} />
-                  上一个
+                  {t("diff:previous")}
                 </Button>
                 <Button
                   variant="navigation"
                   size="compact"
                   className="flex-1"
-                  tooltip="定位下一处差异"
+                  tooltip={t("diff:nextHint")}
                   onClick={() => move(1)}
                   disabled={visible.indexOf(selected) >= visible.length - 1}
-                >
-                  下一个
-                  <ArrowDown aria-hidden="true" size={15} />
+                >{t("diff:next")}<ArrowDown aria-hidden="true" size={15} />
                 </Button>
               </div>
               <strong>{diffs[selected].path}</strong>
-              <p>{diffs[selected].msg}</p>
+              <p>{describeDiff(diffs[selected])}</p>
             </div>
           )}
           {diffs.length > 0 ? (
@@ -456,13 +462,13 @@ export default function JsonDiffResults({
                             diff.kind
                           }
                         >
-                          {kindLabels[diff.kind]}
+                          {t(kindLabels[diff.kind])}
                         </span>
                         <span className="block font-mono text-action leading-[1.6] text-[#385a70] [overflow-wrap:anywhere]">
                           {diff.path}
                         </span>
                         <span className="block mt-0.5 text-body leading-[1.4] text-muted-foreground [overflow-wrap:anywhere]">
-                          {diff.msg}
+                          {describeDiff(diff)}
                         </span>
                       </span>
                     </Button>
@@ -472,7 +478,7 @@ export default function JsonDiffResults({
           ) : (
             <div className="grid justify-items-center gap-[9px] px-3.5 py-[35px] text-caption text-[#4b9c90]">
               <Check aria-hidden="true" size={24} />
-              结构与值都相同。
+              {t("diff:sameStructure")}
             </div>
           )}
         </aside>

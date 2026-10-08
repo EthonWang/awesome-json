@@ -1,5 +1,7 @@
+import { translateMessage } from "../i18n/message.js";
+import { useTranslation } from "react-i18next";
 import { copyText } from "@/lib/clipboard";
-import { surface, paneHeading, fileEmblem } from "@/lib/workspaceStyles";
+import { surface } from "@/lib/workspaceStyles";
 import { cn } from "@/lib/utils";
 import { WithTooltip } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
@@ -32,10 +34,11 @@ import {
 } from "../utils/jsonActions.js";
 
 export default function EditorPage({ ref, showToast, onDirty, active = true }) {
+  const { t } = useTranslation();
   const [tabs, setTabs] = useState([
     {
       id: 1,
-      title: "Tab 1",
+
       content: "",
       error: "",
       cursor: { line: 1, column: 1 },
@@ -78,7 +81,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
   const setTabContent = useCallback((id, content) => {
     setTabs((current) =>
       current.map((tab) =>
-        tab.id === id ? { ...tab, content, error: jsonError(content) } : tab,
+        tab.id === id ? { ...tab, content, error: jsonError(content, true) } : tab,
       ),
     );
   }, []);
@@ -123,9 +126,9 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
       ...current,
       {
         id,
-        title: "Tab " + id,
+
         content,
-        error: jsonError(content),
+        error: jsonError(content, true),
         cursor: { line: 1, column: 1 },
       },
     ]);
@@ -155,12 +158,12 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
   const transform = (mode) => {
     const parsed = parseJsonInput(currentTab.content);
     if (!parsed.ok) {
-      showToast(parsed.message, parsed.kind);
+      showToast(parsed.translation, parsed.kind);
       return;
     }
     updateActive(JSON.stringify(parsed.value, null, mode === "format" ? 2 : 0));
     showToast(
-      mode === "format" ? "已格式化当前 JSON。" : "已压缩当前 JSON。",
+      mode === "format" ? { key: "editor:formatted" } : { key: "editor:compressed" },
       "success",
     );
   };
@@ -168,31 +171,33 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
   const validate = () => {
     const parsed = parseJsonInput(currentTab.content);
     if (!parsed.ok) {
-      showToast(parsed.message, parsed.kind);
+      showToast(parsed.translation, parsed.kind);
       return;
     }
-    showToast("JSON 格式正确。", "success");
+    showToast({ key: "editor:validMessage" }, "success");
   };
 
   const copy = async () => {
     try {
       await copyText(currentTab.content);
-      showToast("已复制当前标签页的内容。", "success");
+      showToast({ key: "editor:copiedTab" }, "success");
     } catch {
-      showToast("自动复制失败，请选中内容后按 Ctrl/Cmd+C 复制。", "error");
+      showToast({ key: "common:copyFailed" }, "error");
     }
   };
 
   return (
     <div className="editor-page">
-      <h1 className="sr-only">JSON 编辑器</h1>
+      <h1 className="sr-only">
+        {t("editor:title")}
+      </h1>
       <div className="block">
         <section
           className={cn(
             surface,
             "flex h-[calc(100dvh-var(--app-header-height)-30px)] min-h-[520px] flex-col max-[760px]:h-[calc(100dvh-var(--app-header-height)-16px)] max-[760px]:min-h-[480px]",
           )}
-          aria-label="JSON 编辑器"
+          aria-label={t("editor:title")}
         >
           <Tabs
             className="flex min-h-0 flex-1 flex-col"
@@ -202,7 +207,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
             <div className="flex h-11 flex-none items-stretch border-b border-border bg-[#f7fafc]">
               <TabsList
                 className="[scrollbar-width:thin]"
-                aria-label="编辑器标签页"
+                aria-label={t("editor:tabs")}
               >
                 {tabs.map((tab) => (
                   <div
@@ -223,15 +228,15 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                         className={tab.error ? "text-destructive" : ""}
                       />
                       <span className="truncate text-body font-semibold">
-                        {tab.title}
+                        {t("editor:tab", { number: tab.id })}
                       </span>
                     </TabsTrigger>
                     {tabs.length > 1 && (
                       <Button
                         variant="unstyled"
                         className="grid size-8 place-items-center self-center rounded-[5px] border-0 bg-transparent mr-1 text-[#8ba1ad] hover:bg-[#e8eef2] hover:text-[#9d535b]"
-                        aria-label={"关闭 " + tab.title}
-                        tooltip={`关闭 ${tab.title}`}
+                        aria-label={t("editor:closeTab", { number: tab.id })}
+                        tooltip={t("editor:closeTab", { number: tab.id })}
                         onClick={() => closeTab(tab.id)}
                       >
                         <X aria-hidden="true" size={13} />
@@ -243,8 +248,8 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
               <Button
                 variant="unstyled"
                 className="inline-flex w-11 flex-none items-center justify-center border-0 bg-transparent p-0 text-[#516e80] hover:bg-[#ecf3f8] hover:text-[#315bbe] max-[760px]:w-10"
-                aria-label="新建标签页"
-                tooltip="新建标签页"
+                aria-label={t("editor:newTab")}
+                tooltip={t("editor:newTab")}
                 onClick={() => addTab()}
               >
                 <Plus aria-hidden="true" size={18} />
@@ -260,11 +265,11 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                     : "bg-[#f0f5f8] text-[#63839a]"
                 }
                 aria-pressed={autoFormat}
-                tooltip="输入停止 800 毫秒后自动格式化有效 JSON"
+                tooltip={t("editor:autoFormatHint")}
                 onClick={() => setAutoFormat((value) => !value)}
               >
-                <Sparkles aria-hidden="true" size={14} /> 自动格式化：
-                {autoFormat ? "开" : "关"}
+                <Sparkles aria-hidden="true" size={14} />
+                {t("editor:autoFormat", { state: t(autoFormat ? "editor:on" : "editor:off") })}
               </Button>
               <span
                 className="h-5 flex-none self-center border-l border-[#cbdbe4] mx-1.5 max-[760px]:hidden"
@@ -273,29 +278,29 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
               <Button
                 variant="ghost"
                 size="toolbar"
-                tooltip="按缩进整理 JSON，方便阅读"
+                tooltip={t("editor:formatHint")}
                 onClick={() => transform("format")}
               >
                 <Braces aria-hidden="true" size={14} />
-                格式化
+                {t("common:format")}
               </Button>
               <Button
                 variant="ghost"
                 size="toolbar"
-                tooltip="移除 JSON 中多余的空格和换行"
+                tooltip={t("editor:compressHint")}
                 onClick={() => transform("compress")}
               >
                 <Minimize2 aria-hidden="true" size={14} />
-                压缩
+                {t("editor:compress")}
               </Button>
               <Button
                 variant="ghost"
                 size="toolbar"
-                tooltip="检查 JSON 语法是否正确"
+                tooltip={t("editor:validateHint")}
                 onClick={validate}
               >
                 <Check aria-hidden="true" size={14} />
-                校验
+                {t("editor:validate")}
               </Button>
               <span
                 className="h-5 flex-none self-center border-l border-[#cbdbe4] mx-1.5 max-[760px]:hidden"
@@ -304,20 +309,20 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
               <Button
                 variant="ghost"
                 size="toolbar"
-                tooltip="搜索内容；Ctrl/Cmd+F 搜索，Ctrl/Cmd+H 替换"
+                tooltip={t("editor:searchHint")}
                 onClick={() => editors.current.get(activeId)?.openSearch()}
               >
                 <Search aria-hidden="true" size={14} />
-                搜索
+                {t("editor:search")}
               </Button>
               <Button
                 variant="ghost"
                 size="toolbar"
-                tooltip="复制当前标签页的全部内容"
+                tooltip={t("editor:copyHint")}
                 onClick={copy}
               >
                 <Clipboard aria-hidden="true" size={14} />
-                复制
+                {t("common:copy")}
               </Button>
               <span
                 className="h-5 flex-none self-center border-l border-[#cbdbe4] mx-1.5 max-[760px]:hidden"
@@ -326,18 +331,18 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
               <Button
                 variant="ghost"
                 size="toolbar"
-                tooltip="移除字符串转义，恢复可读的 JSON"
+                tooltip={t("editor:unescapeHint")}
                 onClick={() => updateActive(removeEscaping(currentTab.content))}
               >
-                去转义
+                {t("editor:unescape")}
               </Button>
               <Button
                 variant="ghost"
                 size="toolbar"
-                tooltip="将内容转为带转义字符的字符串"
+                tooltip={t("editor:escapeHint")}
                 onClick={() => updateActive(addEscaping(currentTab.content))}
               >
-                转义
+                {t("editor:escape")}
               </Button>
               <span
                 className="h-5 flex-none self-center border-l border-[#cbdbe4] mx-1.5 max-[760px]:hidden"
@@ -346,14 +351,14 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
               <Button
                 variant="ghost-destructive"
                 size="toolbar"
-                tooltip="清空当前标签页的内容"
+                tooltip={t("editor:clearHint")}
                 onClick={() => updateActive("")}
               >
                 <Trash2 aria-hidden="true" size={14} />
-                清空
+                {t("common:clear")}
               </Button>
               <span className="flex-1" />
-              <WithTooltip content={currentTab.error}>
+              <WithTooltip content={translateMessage(currentTab.error)}>
                 <span
                   tabIndex={currentTab.error ? 0 : undefined}
                   className={cn(
@@ -377,10 +382,10 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                     )}
                   />
                   {currentTab.error
-                    ? "JSON 格式有误"
+                    ? t("editor:invalid")
                     : currentTab.content.trim()
-                      ? "JSON 合法"
-                      : "等待输入"}
+                      ? t("editor:valid")
+                      : t("editor:waiting")}
                 </span>
               </WithTooltip>
             </div>
@@ -399,7 +404,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                       if (api) editors.current.set(tab.id, api);
                       else editors.current.delete(tab.id);
                     }}
-                    label={tab.title + " JSON 编辑器"}
+                    label={t("editor:tabEditor", { number: tab.id })}
                     value={tab.content}
                     onChange={(value) => onEditorChange(tab.id, value)}
                     onCursorChange={(line, column) =>
@@ -410,12 +415,12 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                 </TabsContent>
               ))}
             </div>
-            <div className="flex min-h-9 flex-none items-center justify-start gap-3 border-t border-border bg-[#fbfdfe] px-[17px] text-caption text-muted-foreground [&_span:last-child]:tabular-nums">
+            <div className="flex min-h-9 flex-none items-center justify-start flex-wrap gap-x-3 gap-y-1 py-1 border-t border-border bg-[#fbfdfe] px-[17px] text-caption text-muted-foreground [&_span:last-child]:tabular-nums">
               <span>
-                {tabs.length} 个标签页　·　{currentTab.content.length} 字符
+                {t("editor:tabCount", { count: tabs.length })} · {t("editor:characterCount", { count: currentTab.content.length })}
               </span>
               <span>
-                第 {cursor.line} 行，第 {cursor.column} 列
+                {t("editor:cursor", { line: cursor.line, column: cursor.column })}
               </span>
             </div>
           </Tabs>

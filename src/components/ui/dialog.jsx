@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Dialog as DialogPrimitive } from "radix-ui";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -16,6 +17,7 @@ function DialogContent({
   showCloseButton = true,
   ...props
 }) {
+  const { t } = useTranslation();
   return (
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay
@@ -37,7 +39,7 @@ function DialogContent({
               variant="ghost"
               size="icon"
               className="absolute right-4 top-4"
-              aria-label="关闭弹窗"
+              aria-label={t("common:closeDialog")}
             >
               <X />
             </Button>
