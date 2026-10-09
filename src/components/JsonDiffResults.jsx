@@ -4,6 +4,7 @@ import { scrollBehavior } from "@/lib/scroll";
 import { surface, paneHeading, fileEmblem } from "@/lib/workspaceStyles";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { WithTooltip } from "@/components/ui/tooltip";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowDown,
@@ -270,8 +271,8 @@ export default function JsonDiffResults({
         )}
       >
         <div className={cn(surface, "w-full")}>
-          <div className="flex min-h-[56px] py-2 items-center justify-between gap-2.5 border-b border-border pl-5 pr-[18px] max-[760px]:h-auto max-[760px]:min-h-[100px] max-[760px]:flex-col max-[760px]:items-stretch max-[760px]:gap-1.5 max-[760px]:px-2.5 max-[760px]:py-2">
-            <div className="flex items-center gap-[9px] min-w-0 flex-wrap text-action text-[#557083] [&_strong]:flex-none [&_strong]:text-body [&_strong]:text-foreground">
+          <div className="flex min-h-11 flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b border-border px-3 py-1.5">
+            <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2 text-action text-[#557083] [&_strong]:flex-none [&_strong]:text-body [&_strong]:text-foreground">
               <span className="size-2 flex-none rounded-full bg-[#2da69c] shadow-[0_0_0_4px_#e2f4f0]" />
               <strong>
                 {t("diff:completed")}
@@ -282,15 +283,20 @@ export default function JsonDiffResults({
                   : t("diff:identical")}
               </span>
               {diffs[selected] && (
-                <span className="min-w-0 max-w-[min(32vw,100%)] truncate rounded-[5px] bg-[#e8f0ff] px-2 py-1 font-mono text-caption text-[#315db4]">
-                  {t("diff:currentPath", { path: diffs[selected].path })}
-                </span>
+                <WithTooltip content={t("diff:currentPath", { path: diffs[selected].path })}>
+                  <span
+                    tabIndex={0}
+                    className="min-w-0 max-w-[min(24rem,100%)] truncate rounded bg-[#e8f0ff] px-2 py-0.5 font-mono text-caption text-[#315db4] focus-visible:outline-2 focus-visible:outline-ring"
+                  >
+                    {t("diff:currentPath", { path: diffs[selected].path })}
+                  </span>
+                </WithTooltip>
               )}
             </div>
-            <div className="flex flex-none items-center gap-2 max-[760px]:flex-wrap max-[760px]:justify-end max-[760px]:gap-1">
+            <div className="ml-auto flex flex-none flex-wrap items-center justify-end gap-1">
               <Button
                 variant="ghost"
-                size="sm"
+                size="toolbar"
                 tooltip={t("diff:copySummaryHint")}
                 onClick={copySummary}
               >
@@ -299,7 +305,7 @@ export default function JsonDiffResults({
               </Button>
               <Button
                 variant="ghost"
-                size="sm"
+                size="toolbar"
                 className="border border-[#b6caed] bg-[#edf3ff] text-[#315db4] [&_span]:text-caption"
                 tooltip={
                   indexOpen ? t("diff:collapseIndexHint") : t("diff:expandIndexHint")
@@ -315,6 +321,7 @@ export default function JsonDiffResults({
               <Button
                 variant="ghost"
                 size="icon"
+                className="size-7 pointer-coarse:size-11"
                 tooltip={t("diff:closeResultsHint")}
                 aria-label={t("diff:closeResults")}
                 onClick={onClose}
@@ -356,26 +363,29 @@ export default function JsonDiffResults({
         </div>
         <aside
           id="diff-index"
-          className="absolute top-[80px] right-4 z-5 flex h-[min(690px,calc(100%-96px))] w-[clamp(310px,20vw,360px)] flex-col overflow-hidden rounded-[10px] border border-[#c9d9e3] bg-white shadow-[0_15px_42px_#17384b33] min-[1440px]:static min-[1440px]:h-auto min-[1440px]:max-h-[calc(clamp(680px,78vh,900px)+116px)] min-[1440px]:min-h-0 min-[1440px]:w-full min-[1440px]:rounded-[10px] min-[1440px]:shadow-[0_1px_3px_#1e496008] max-[760px]:top-[168px] max-[760px]:right-2 max-[760px]:h-[min(540px,calc(100%-184px))] max-[760px]:w-[min(310px,calc(100%-16px))]"
+          className="absolute top-[80px] right-4 z-5 flex h-[min(690px,calc(100%-96px))] w-[clamp(280px,22vw,320px)] flex-col overflow-hidden rounded-[10px] border border-[#c9d9e3] bg-white shadow-[0_15px_42px_#17384b33] min-[1440px]:static min-[1440px]:h-auto min-[1440px]:max-h-[calc(clamp(680px,78vh,900px)+116px)] min-[1440px]:min-h-0 min-[1440px]:w-full min-[1440px]:rounded-[10px] min-[1440px]:shadow-[0_1px_3px_#1e496008] max-[760px]:top-[168px] max-[760px]:right-2 max-[760px]:h-[min(540px,calc(100%-184px))] max-[760px]:w-[min(300px,calc(100%-16px))]"
           aria-label={t("diff:index")}
           hidden={!indexOpen}
         >
-          <div className="flex-none px-3.5 pt-[13px] pb-3">
-            <div className="flex items-center justify-between gap-2.5">
-              <h2 className="m-0 text-title font-semibold tracking-[-.03em]">
+          <div className="flex-none px-3 py-2">
+            <div className="flex min-w-0 items-center justify-between gap-2">
+              <h2 className="m-0 min-w-0 flex-1 whitespace-nowrap text-body font-semibold tracking-[-.03em]">
                 {t("diff:index")}
               </h2>
               <Button
                 variant="ghost"
-                size="sm"
+                size="icon"
+                className="size-7 flex-none pointer-coarse:size-11"
                 tooltip={t("diff:collapseIndexHint")}
+                aria-label={t("diff:collapsePanel")}
                 onClick={() => setIndexOpen(false)}
-              >{t("diff:collapsePanel")}<X aria-hidden="true" size={15} />
+              >
+                <X aria-hidden="true" size={15} />
               </Button>
             </div>
             {diffs.length > 0 && (
               <div
-                className="flex flex-wrap gap-[5px] mt-2.5 tabular-nums"
+                className="mt-2 flex flex-wrap gap-1 tabular-nums"
                 aria-label={t("diff:filter")}
               >
                 {filterOptions.map(([type, label]) => (
@@ -383,7 +393,7 @@ export default function JsonDiffResults({
                     variant="unstyled"
                     key={type}
                     className={cn(
-                      "filter rounded-[7px] border border-[#d7e2e8] bg-white px-[9px] py-[7px] text-action font-semibold text-[#627d8e]",
+                      "filter min-h-7 rounded-md border border-[#d7e2e8] bg-white px-2 py-0.5 text-action pointer-coarse:min-h-11 font-semibold text-[#627d8e]",
                       "diff-" + type,
                       filter === type
                         ? "active border-[var(--navy)] bg-[var(--navy)] text-white"
@@ -402,37 +412,33 @@ export default function JsonDiffResults({
             )}
           </div>
           {selected >= 0 && visible.includes(selected) && (
-            <div
-              className="relative flex-none mx-[15px] my-3.5 rounded-[9px] border border-[#dce7ec] bg-white p-3 [&_small]:text-caption [&_small]:text-muted-foreground [&_p]:m-0 [&_p]:text-body [&_p]:leading-[1.55] [&_p]:text-[#607987] [&_strong]:block [&_strong]:my-[5px] [&_strong]:font-mono [&_strong]:text-action [&_strong]:text-[#315269] [&_strong]:[overflow-wrap:anywhere]"
-              aria-live="polite"
-            >
-              <small className="mb-2 block tabular-nums">
+            <div className="flex flex-none items-center gap-1 border-t border-border px-3 py-2">
+              <span className="min-w-0 flex-1 truncate text-caption tabular-nums text-muted-foreground" aria-live="polite">
                 {t("diff:currentDifference", { current: visible.indexOf(selected) + 1, total: visible.length })}
-              </small>
-              <div className="mb-3 flex gap-[7px]">
-                <Button
-                  variant="navigation"
-                  size="compact"
-                  className="flex-1"
-                  tooltip={t("diff:previousHint")}
-                  onClick={() => move(-1)}
-                  disabled={visible.indexOf(selected) <= 0}
-                >
-                  <ArrowUp aria-hidden="true" size={15} />
-                  {t("diff:previous")}
-                </Button>
-                <Button
-                  variant="navigation"
-                  size="compact"
-                  className="flex-1"
-                  tooltip={t("diff:nextHint")}
-                  onClick={() => move(1)}
-                  disabled={visible.indexOf(selected) >= visible.length - 1}
-                >{t("diff:next")}<ArrowDown aria-hidden="true" size={15} />
-                </Button>
-              </div>
-              <strong>{diffs[selected].path}</strong>
-              <p>{describeDiff(diffs[selected])}</p>
+                <span className="sr-only"> {diffs[selected].path}: {describeDiff(diffs[selected])}</span>
+              </span>
+              <Button
+                variant="navigation"
+                size="icon"
+                className="size-7 flex-none pointer-coarse:size-11"
+                tooltip={t("diff:previousHint")}
+                aria-label={t("diff:previous")}
+                onClick={() => move(-1)}
+                disabled={visible.indexOf(selected) <= 0}
+              >
+                <ArrowUp aria-hidden="true" size={14} />
+              </Button>
+              <Button
+                variant="navigation"
+                size="icon"
+                className="size-7 flex-none pointer-coarse:size-11"
+                tooltip={t("diff:nextHint")}
+                aria-label={t("diff:next")}
+                onClick={() => move(1)}
+                disabled={visible.indexOf(selected) >= visible.length - 1}
+              >
+                <ArrowDown aria-hidden="true" size={14} />
+              </Button>
             </div>
           )}
           {diffs.length > 0 ? (
@@ -447,11 +453,12 @@ export default function JsonDiffResults({
                       variant="unstyled"
                       data-diff-index={index}
                       className={cn(
-                        "diff-item grid w-full grid-cols-[4px_minmax(0,1fr)] gap-2.5 border-0 border-b border-[#e5edf1] bg-transparent px-3 py-2.5 text-left hover:bg-[#f0f6fa]",
+                        "diff-item grid w-full grid-cols-[4px_minmax(0,1fr)] gap-2.5 border-0 border-b border-[#e5edf1] bg-transparent px-3 py-1.5 text-left hover:bg-[#f0f6fa]",
                         index === selected &&
                           "bg-[#e8f0ff] shadow-[inset_0_0_0_2px_#4a75d3]",
                       )}
                       key={index}
+                      aria-current={index === selected ? "true" : undefined}
                       onClick={() => select(index)}
                     >
                       <span className={"bar rounded-[5px] diff-" + diff.kind} />
