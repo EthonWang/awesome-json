@@ -70,5 +70,65 @@
   "itemCount_other": "{{count}} 项",
   "itemCount_one": "{{count}} 项",
   "differenceCount_other": "发现 {{count}} 处差异",
-  "differenceCount_one": "发现 {{count}} 处差异"
+  "differenceCount_one": "发现 {{count}} 处差异",
+  "viewRules": "查看 diff 规则",
+  "rulesHint": "查看当前 JSON 比较规则和已知限制",
+  "rulesTitle": "JSON diff 规则",
+  "rulesDescription": "当前比较基于 JSON 解析后的结构和值。以下规则和限制会影响差异结果。",
+  "rules": {
+    "comparison": "比较规则",
+    "limitations": "已知限制",
+    "structure": {
+      "title": "忽略排版与对象属性顺序",
+      "description": "缩进、换行、JSON 外部空白和对象属性顺序不影响结果；对象按属性名递归比较，结果中的对象属性按名称排序展示。"
+    },
+    "numbers": {
+      "title": "数字按数值比较",
+      "description": "1、1.0、1e0 视为相同，0 与 -0 也视为相同。解析后不保留数字的原始写法。"
+    },
+    "types": {
+      "title": "严格区分类型",
+      "description": "数字 1 与字符串 \"1\" 不同。null、对象、数组、字符串、数字和布尔值分别判断类型；类型变化时不继续比较该节点内部。"
+    },
+    "arrays": {
+      "title": "数组按下标比较",
+      "description": "数组顺序影响结果，不识别元素移动，也不按 id 匹配对象。例如 [1,2,3] 与 [0,1,2,3] 会产生 3 个值变化和 1 个新增，而不是仅报开头插入。"
+    },
+    "strings": {
+      "title": "字符串按解析后的内容比较",
+      "description": "\"a\" 与 \"\\u0061\" 相同。字符串内的空格、换行和大小写影响结果，不进行 Unicode 归一化。"
+    },
+    "missing": {
+      "title": "缺失与空值不同",
+      "description": "属性缺失、null、空字符串、空对象 {} 和空数组 [] 均有区别。右侧独有项视为新增，左侧独有项视为缺失。"
+    },
+    "counting": {
+      "title": "整个节点计为一条差异",
+      "description": "新增或删除整个对象、数组，以及节点类型变化，均计为一条差异，不按内部属性或元素逐项计数。"
+    },
+    "syntax": {
+      "title": "仅接受标准 JSON",
+      "description": "空输入或非法 JSON 会停止本次比较。输入不支持注释、尾逗号、单引号、undefined、NaN 等扩展语法，也不会自动修复。"
+    },
+    "precision": {
+      "title": "数字精度与范围",
+      "description": "超出安全整数范围（±9007199254740991）的整数可能丢失精度，例如 9007199254740992 与 9007199254740993 可能被判为相同。极大指数数值（如 1e400）可能溢出，也没有额外保护。"
+    },
+    "duplicates": {
+      "title": "重复属性名只保留最后一个值",
+      "description": "同一对象包含重复属性名时，解析会覆盖前面的值；不提示重复属性，也无法比较被覆盖的内容。"
+    },
+    "paths": {
+      "title": "特殊属性名可能影响定位",
+      "description": "空属性名、包含 / 或与数组下标写法相同（如 [0]）的属性名可能产生路径冲突，导致差异高亮、摘要路径或定位不准确。"
+    },
+    "display": {
+      "title": "部分特殊情况的展示不完整",
+      "description": "根节点类型变化时，子行可能未全部高亮。字符串中部分不常见的控制字符没有完整转义，展示可能不准确。"
+    },
+    "size": {
+      "title": "大体积与极深嵌套数据",
+      "description": "当前比较和展示在页面中同步执行；大体积或极深嵌套的 JSON 可能导致卡顿或比较失败。"
+    }
+  }
 }

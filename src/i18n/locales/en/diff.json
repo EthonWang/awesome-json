@@ -70,5 +70,65 @@
   "itemCount_other": "{{count}} items",
   "itemCount_one": "{{count}} item",
   "differenceCount_other": "{{count}} differences found",
-  "differenceCount_one": "{{count}} difference found"
+  "differenceCount_one": "{{count}} difference found",
+  "viewRules": "View diff rules",
+  "rulesHint": "View current JSON comparison rules and known limitations",
+  "rulesTitle": "JSON diff rules",
+  "rulesDescription": "Comparison uses parsed JSON structures and values. These rules and limitations affect the results.",
+  "rules": {
+    "comparison": "Comparison rules",
+    "limitations": "Known limitations",
+    "structure": {
+      "title": "Formatting and object key order are ignored",
+      "description": "Indentation, line breaks, whitespace outside strings, and object key order do not affect results. Objects are compared recursively by key; result views sort object keys by name."
+    },
+    "numbers": {
+      "title": "Numbers are compared by value",
+      "description": "1, 1.0, and 1e0 are equal, as are 0 and -0. Parsing does not preserve the original number notation."
+    },
+    "types": {
+      "title": "Types are compared strictly",
+      "description": "The number 1 differs from the string \"1\". Null, objects, arrays, strings, numbers, and booleans have distinct types. A type change stops comparison inside that node."
+    },
+    "arrays": {
+      "title": "Arrays are compared by index",
+      "description": "Array order matters. Moves and object matching by id are not detected. For example, [1,2,3] versus [0,1,2,3] produces three value changes and one addition, rather than a single insertion at the start."
+    },
+    "strings": {
+      "title": "Strings are compared after parsing",
+      "description": "\"a\" and \"\\u0061\" are equal. Spaces, line breaks, and case within strings matter. Unicode normalization is not applied."
+    },
+    "missing": {
+      "title": "Missing values differ from empty values",
+      "description": "A missing property, null, an empty string, {}, and [] are distinct. Items only on the right are added; items only on the left are removed."
+    },
+    "counting": {
+      "title": "Whole nodes count as one difference",
+      "description": "Adding or removing an entire object or array, or changing a node’s type, counts as one difference. Its contents are not counted individually."
+    },
+    "syntax": {
+      "title": "Only standard JSON is accepted",
+      "description": "Empty or invalid input stops the comparison. Comments, trailing commas, single quotes, undefined, NaN, and other extensions are not accepted. Input is not automatically repaired."
+    },
+    "precision": {
+      "title": "Number precision and range",
+      "description": "Integers outside the safe range (±9007199254740991) may lose precision. For example, 9007199254740992 and 9007199254740993 may compare as equal. Very large exponents such as 1e400 may overflow; no additional protection is applied."
+    },
+    "duplicates": {
+      "title": "Duplicate keys keep only the last value",
+      "description": "Parsing overwrites earlier values for duplicate keys within an object. Duplicate keys are not reported, and overwritten values cannot be compared."
+    },
+    "paths": {
+      "title": "Special keys may affect navigation",
+      "description": "Empty keys, keys containing /, or keys resembling array indices (such as [0]) may cause path collisions and inaccurate highlighting, summary paths, or navigation."
+    },
+    "display": {
+      "title": "Some edge cases have incomplete display",
+      "description": "When the root type changes, child lines may not all be highlighted. Some uncommon control characters in strings are not fully escaped and may display inaccurately."
+    },
+    "size": {
+      "title": "Large or deeply nested data",
+      "description": "Comparison and rendering run synchronously on the page. Large or deeply nested JSON may cause slowdowns or comparison failures."
+    }
+  }
 }

@@ -20,6 +20,7 @@ import {
   Eye,
   FileJson,
   GitCompare,
+  BookOpen,
   Pencil,
   Sparkles,
   Trash2,
@@ -27,6 +28,7 @@ import {
 } from "lucide-react";
 import CodeEditor from "../components/CodeEditor.jsx";
 import JsonDiffResults from "../components/JsonDiffResults.jsx";
+import DiffRulesDialog from "../components/DiffRulesDialog.jsx";
 import { parseJsonInput } from "../utils/jsonActions.js";
 import {
   sampleLeft,
@@ -121,9 +123,11 @@ export default function DiffPage({
   const [snapshot, setSnapshot] = useState(null);
   const [stale, setStale] = useState(false);
   const [viewer, setViewer] = useState(null);
+  const [rulesOpen, setRulesOpen] = useState(false);
   const [inputCollapsed, setInputCollapsed] = useState(false);
   const resultRef = useRef(null);
   const viewerOpenerRef = useRef(null);
+  const rulesOpenerRef = useRef(null);
   const expandedInput =
     !snapshot || (!sources.left.trim() && !sources.right.trim());
   const emptyInputs = !sources.left.trim() && !sources.right.trim();
@@ -247,6 +251,17 @@ export default function DiffPage({
           </div>
           <div className="flex gap-[9px] max-[760px]:w-full max-[760px]:flex-wrap">
             <Button
+              ref={rulesOpenerRef}
+              variant="outline"
+              size="sm"
+              tooltip={t("diff:rulesHint")}
+              aria-haspopup="dialog"
+              onClick={() => setRulesOpen(true)}
+            >
+              <BookOpen aria-hidden="true" size={15} />
+              {t("diff:viewRules")}
+            </Button>
+            <Button
               variant="destructive"
               size="sm"
               tooltip={t("diff:clearBothHint")}
@@ -343,6 +358,11 @@ export default function DiffPage({
         ) : null}
       </div>
 
+      <DiffRulesDialog
+        open={rulesOpen}
+        onOpenChange={setRulesOpen}
+        openerRef={rulesOpenerRef}
+      />
       <Dialog
         open={Boolean(viewer)}
         onOpenChange={(open) => {
