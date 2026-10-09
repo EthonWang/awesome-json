@@ -49,7 +49,7 @@ function SourcePane({
   return (
     <section
       className={cn(
-        "source-pane min-w-0 [&+&]:border-l [&+&]:border-border max-[760px]:[&+&]:border-l-0 max-[760px]:[&+&]:border-t",
+        "source-pane @container/source min-w-0 [&+&]:border-l [&+&]:border-border max-[760px]:[&+&]:border-l-0 max-[760px]:[&+&]:border-t",
         emptyInputs &&
           "min-[761px]:flex min-[761px]:min-h-0 min-[761px]:flex-col",
       )}
@@ -58,14 +58,14 @@ function SourcePane({
       <div
         className={cn(
           paneHeading,
-          "h-auto min-h-[52px] flex-none flex-wrap gap-x-3 gap-y-1 px-3 py-2",
+          "grid h-auto min-h-11 flex-none grid-cols-1 gap-x-3 gap-y-1 px-3 py-1.5 @min-[26rem]/source:grid-cols-[minmax(0,1fr)_auto]",
         )}
       >
-        <div className="flex flex-none items-center gap-2 whitespace-nowrap">
+        <div className="flex min-w-0 items-center gap-2 whitespace-nowrap">
           <span className={fileEmblem}>{"{ }"}</span>
-          <strong>{label}</strong>
+          <strong className="truncate">{label}</strong>
         </div>
-        <div className="flex min-h-0 flex-wrap items-center gap-0.5 p-0 ml-auto max-[420px]:gap-0">
+        <div className="flex min-h-0 flex-nowrap items-center gap-0.5 @min-[26rem]/source:justify-end">
           {[
             ["format", t("common:format"), Braces, t("diff:formatHint")],
             ["view", t("diff:view"), Eye, t("diff:viewHint")],
@@ -77,12 +77,13 @@ function SourcePane({
               key={action}
               tooltip={hint}
               variant={action === "clear" ? "ghost-destructive" : "ghost"}
-              size="sm"
-              className="px-1.5"
+              size="toolbar"
+              className="justify-center px-2 pointer-coarse:min-w-11"
+              aria-label={title}
               onClick={() => onAction(side, action)}
             >
               <Icon aria-hidden="true" size={14} />
-              {title}
+              <span className="hidden @min-[40rem]/source:inline">{title}</span>
             </Button>
           ))}
         </div>
@@ -211,7 +212,7 @@ export default function DiffPage({
             "min-[761px]:flex min-[761px]:h-[max(420px,calc(100dvh-var(--app-header-height)-30px))] min-[761px]:flex-col",
         )}
       >
-        <div className="flex min-h-11 flex-none items-center justify-between gap-3 border-b border-border bg-[#f9fcfd] px-3 py-[5px] max-[760px]:flex-wrap">
+        <div className="flex min-h-10 flex-none items-center justify-between gap-3 border-b border-border bg-[#f9fcfd] px-3 py-1 [&_button]:min-h-7 pointer-coarse:[&_button]:min-h-11 max-[760px]:flex-wrap">
           <div className="flex gap-[9px] max-[760px]:w-full max-[760px]:flex-wrap">
             <Button
               variant="outline"
