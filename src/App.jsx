@@ -81,7 +81,7 @@ export default function App() {
             </span>
           </NavLink>
           <nav
-            className="flex items-stretch self-stretch gap-1 [&_a]:inline-flex [&_a]:items-center [&_a]:gap-[9px] [&_a]:whitespace-nowrap [&_a]:border-b-[3px] [&_a]:border-transparent [&_a]:px-[18px] [&_a]:text-title [&_a]:font-semibold [&_a]:text-[#60798a] [&_a]:no-underline [&_a:hover]:bg-[#f7fafc] [&_a:hover]:text-[#284e69] [&_a.active]:border-primary [&_a.active]:text-[#315bbe] max-[760px]:[&_a]:px-[9px] max-[480px]:[&_a]:px-2 max-[760px]:[&_a]:text-body max-[760px]:[&_svg]:hidden"
+            className="flex items-stretch self-stretch gap-1 [&_a]:inline-flex [&_a]:items-center [&_a]:gap-[9px] [&_a]:whitespace-nowrap [&_a]:border-b-[3px] [&_a]:border-transparent [&_a]:px-[18px] [&_a]:text-body [&_a]:font-semibold [&_a]:text-[#60798a] [&_a]:no-underline [&_a:hover]:bg-[#f7fafc] [&_a:hover]:text-[#284e69] [&_a.active]:border-primary [&_a.active]:text-[#315bbe] max-[760px]:[&_a]:px-[9px] max-[480px]:[&_a]:px-2 max-[760px]:[&_svg]:hidden"
             aria-label={t("common:workspace")}
           >
             <NavLink to="/" end>
