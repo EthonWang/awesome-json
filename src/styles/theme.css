@@ -23,21 +23,21 @@
   --syntax-punctuation: #587181;
   --mono:
     "SFMono-Regular", "Cascadia Code", "JetBrains Mono", Consolas, monospace;
-  --app-header-height: 72px;
+  --app-header-height: 56px;
   --type-caption: 0.75rem;
   --type-action: 0.8125rem;
   --type-body: 0.875rem;
-  --type-code: 0.9375rem;
+  --type-code: 0.875rem;
   --type-title: 1rem;
-  --type-brand: 1.25rem;
-  --code-line-height: 25px;
-  --tree-line-height: 23px;
+  --type-brand: 1.125rem;
+  --code-line-height: 1.375rem;
+  --tree-line-height: 1.375rem;
   --ui: "Avenir Next", "PingFang SC", "Microsoft YaHei", sans-serif;
 }
 
 @media (max-width: 760px) {
   :root {
-    --app-header-height: 60px;
+    --app-header-height: 56px;
   }
 }
 

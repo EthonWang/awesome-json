@@ -64,17 +64,17 @@ export default function App() {
         {t("common:skipContent")}
       </a>
       <div className="min-w-0">
-        <header className="flex h-[var(--app-header-height)] items-center gap-6 border-b border-border bg-white px-6 max-[900px]:gap-3 max-[480px]:gap-1 max-[900px]:px-4 max-[480px]:px-2">
+        <header className="flex h-[var(--app-header-height)] items-center gap-5 border-b border-border bg-white px-4 max-[900px]:gap-3 max-[480px]:gap-1 max-[900px]:px-4 max-[480px]:px-2">
           <NavLink
             aria-label={t("common:home")}
-            className="inline-flex flex-none items-center gap-2.5 whitespace-nowrap text-brand font-extrabold tracking-[-.035em] no-underline max-[760px]:text-title [&_img]:block [&_img]:size-8 [&_img]:object-contain max-[760px]:[&_img]:size-[27px]"
+            className="inline-flex flex-none items-center gap-2.5 whitespace-nowrap text-brand font-bold tracking-[-.035em] no-underline max-[760px]:text-title [&_img]:block [&_img]:size-6 [&_img]:object-contain max-[760px]:[&_img]:size-6"
             to="/"
           >
             <img
               src={import.meta.env.BASE_URL + "favicon.ico"}
               alt=""
-              width="32"
-              height="32"
+              width="24"
+              height="24"
             />
             <span className="max-[600px]:hidden" translate="no">
               Awesome JSON
@@ -98,7 +98,7 @@ export default function App() {
         <main
           id="main-content"
           tabIndex={-1}
-          className="mx-auto px-4 pt-3 pb-4 max-[760px]:p-2"
+          className="mx-auto px-3 pt-2 pb-3 max-[760px]:p-2"
         >
           <div hidden={onDiff}>
             <EditorPage

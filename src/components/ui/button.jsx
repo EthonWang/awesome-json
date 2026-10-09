@@ -26,7 +26,7 @@ const buttonVariants = cva(
         default: "min-h-[38px] px-3.5 text-action [&_svg]:size-[15px]",
         sm: "min-h-8 px-2.5 text-action [&_svg]:size-[15px]",
         compact: "min-h-[34px] px-2.5 text-action [&_svg]:size-[15px]",
-        toolbar: "min-h-9 px-[9px] text-action [&_svg]:size-4",
+        toolbar: "min-h-7 pointer-coarse:min-h-11 px-2 text-action [&_svg]:size-3.5",
         icon: "grid size-8 place-items-center p-0 [&_svg]:size-[18px]",
         unstyled: "",
       },

@@ -106,7 +106,7 @@ const editorTheme = EditorView.theme({
     fontFamily: "var(--mono)",
     lineHeight: "var(--code-line-height)",
   },
-  ".cm-content": { padding: "14px 0", caretColor: "#315bbe" },
+  ".cm-content": { padding: "10px 0", caretColor: "#315bbe" },
   ".cm-line": { padding: "0 16px 0 8px" },
   ".cm-gutters": {
     backgroundColor: "#f6f9fb",

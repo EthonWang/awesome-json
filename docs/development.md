@@ -35,9 +35,11 @@
 | `text-caption` | 辅助信息 | 12px |
 | `text-action` | 按钮与操作 | 13px |
 | `text-body` | 正文 | 14px |
-| `text-code` | 等宽代码 | 15px |
+| `text-code` | 等宽代码 | 14px |
 | `text-title` | 标题 | 16px |
-| `text-brand` | 品牌 | 20px |
+| `text-brand` | 品牌 | 18px |
+
+桌面采用紧凑布局：页头 56px、标签栏 34px、工具栏至少 40px、状态栏至少 26px；代码和树形行高默认 22px。字号与行高使用 `rem`，随用户根字号偏好缩放。粗指针设备的工具栏、标签页关闭和语言切换按钮保留至少 44px 的点击高度。
 
 辅助文字使用 `text-muted-foreground`，常规文字使用默认字重，操作与标题使用 600，重点信息使用 700。编辑器与搜索面板复用公共字体变量；编辑器、JSON 树和 Diff 代码引用公共语法颜色变量。
 

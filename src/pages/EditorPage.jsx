@@ -195,7 +195,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
         <section
           className={cn(
             surface,
-            "flex h-[calc(100dvh-var(--app-header-height)-30px)] min-h-[520px] flex-col max-[760px]:h-[calc(100dvh-var(--app-header-height)-16px)] max-[760px]:min-h-[480px]",
+            "flex h-[calc(100dvh-var(--app-header-height)-20px)] min-h-[520px] flex-col max-[760px]:h-[calc(100dvh-var(--app-header-height)-16px)] max-[760px]:min-h-[480px]",
           )}
           aria-label={t("editor:title")}
         >
@@ -204,7 +204,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
             value={String(activeId)}
             onValueChange={(value) => setActiveId(Number(value))}
           >
-            <div className="flex h-11 flex-none items-stretch border-b border-border bg-[#f7fafc]">
+            <div className="flex h-[34px] pointer-coarse:min-h-11 flex-none items-stretch border-b border-border bg-[#f7fafc]">
               <TabsList
                 className="[scrollbar-width:thin]"
                 aria-label={t("editor:tabs")}
@@ -219,7 +219,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                     key={tab.id}
                   >
                     <TabsTrigger
-                      className="min-w-0 max-w-[165px] gap-[7px] px-3.5 text-body font-bold text-[#577588] data-[state=active]:text-[#264c69]"
+                      className="min-w-0 max-w-[165px] gap-[7px] px-3 text-action font-semibold text-[#577588] data-[state=active]:text-[#264c69]"
                       value={String(tab.id)}
                     >
                       <FileJson
@@ -227,14 +227,14 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                         size={15}
                         className={tab.error ? "text-destructive" : ""}
                       />
-                      <span className="truncate text-body font-semibold">
+                      <span className="truncate text-action font-semibold">
                         {t("editor:tab", { number: tab.id })}
                       </span>
                     </TabsTrigger>
                     {tabs.length > 1 && (
                       <Button
                         variant="unstyled"
-                        className="grid size-8 place-items-center self-center rounded-[5px] border-0 bg-transparent mr-1 text-[#8ba1ad] hover:bg-[#e8eef2] hover:text-[#9d535b]"
+                        className="grid size-6 pointer-coarse:size-11 place-items-center self-center rounded-[5px] border-0 bg-transparent mr-1 text-[#8ba1ad] hover:bg-[#e8eef2] hover:text-[#9d535b]"
                         aria-label={t("editor:closeTab", { number: tab.id })}
                         tooltip={t("editor:closeTab", { number: tab.id })}
                         onClick={() => closeTab(tab.id)}
@@ -247,7 +247,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
               </TabsList>
               <Button
                 variant="unstyled"
-                className="inline-flex w-11 flex-none items-center justify-center border-0 bg-transparent p-0 text-[#516e80] hover:bg-[#ecf3f8] hover:text-[#315bbe] max-[760px]:w-10"
+                className="inline-flex w-9 pointer-coarse:min-w-11 flex-none items-center justify-center border-0 bg-transparent p-0 text-[#516e80] hover:bg-[#ecf3f8] hover:text-[#315bbe] max-[760px]:w-9"
                 aria-label={t("editor:newTab")}
                 tooltip={t("editor:newTab")}
                 onClick={() => addTab()}
@@ -255,7 +255,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                 <Plus aria-hidden="true" size={18} />
               </Button>
             </div>
-            <div className="flex min-h-[52px] flex-none flex-wrap items-center gap-1 border-b border-border px-3.5 py-[7px]">
+            <div className="flex min-h-10 flex-none flex-wrap items-center gap-1 border-b border-border px-2 py-[5px]">
               <Button
                 variant="ghost"
                 size="toolbar"
@@ -415,7 +415,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                 </TabsContent>
               ))}
             </div>
-            <div className="flex min-h-9 flex-none items-center justify-start flex-wrap gap-x-3 gap-y-1 py-1 border-t border-border bg-[#fbfdfe] px-[17px] text-caption text-muted-foreground [&_span:last-child]:tabular-nums">
+            <div className="flex min-h-[26px] flex-none items-center justify-start flex-wrap gap-x-3 gap-y-1 py-[3px] border-t border-border bg-[#fbfdfe] px-3 text-caption text-muted-foreground [&_span:last-child]:tabular-nums">
               <span>
                 {t("editor:tabCount", { count: tabs.length })} · {t("editor:characterCount", { count: currentTab.content.length })}
               </span>
