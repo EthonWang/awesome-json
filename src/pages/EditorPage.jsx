@@ -14,6 +14,8 @@ import {
 } from "react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import {
+  ArrowLeftToLine,
+  ArrowRightFromLine,
   Braces,
   Check,
   Clipboard,
@@ -195,7 +197,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
         <section
           className={cn(
             surface,
-            "flex h-[calc(100dvh-var(--app-header-height)-20px)] min-h-[520px] flex-col max-[760px]:h-[calc(100dvh-var(--app-header-height)-16px)] max-[760px]:min-h-[480px]",
+            "@container/editor flex h-[calc(100dvh-var(--app-header-height)-20px)] min-h-[520px] flex-col max-[760px]:h-[calc(100dvh-var(--app-header-height)-16px)] max-[760px]:min-h-[480px]",
           )}
           aria-label={t("editor:title")}
         >
@@ -255,7 +257,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                 <Plus aria-hidden="true" size={18} />
               </Button>
             </div>
-            <div className="flex min-h-10 flex-none flex-wrap items-center gap-1 border-b border-border px-2 py-[5px]">
+            <div className="flex min-h-10 flex-none flex-wrap items-center gap-1 border-b border-border px-2 py-[5px] [&_button]:flex-none [&_button]:justify-center [&_button]:min-w-7 pointer-coarse:[&_button]:min-w-11">
               <Button
                 variant="ghost"
                 size="toolbar"
@@ -265,97 +267,108 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                     : "bg-[#f0f5f8] text-[#63839a]"
                 }
                 aria-pressed={autoFormat}
+                aria-label={t("editor:autoFormat", { state: t(autoFormat ? "editor:on" : "editor:off") })}
                 tooltip={t("editor:autoFormatHint")}
                 onClick={() => setAutoFormat((value) => !value)}
               >
                 <Sparkles aria-hidden="true" size={14} />
-                {t("editor:autoFormat", { state: t(autoFormat ? "editor:on" : "editor:off") })}
+                <span className="hidden @min-[64rem]/editor:inline">{t("editor:autoFormat", { state: t(autoFormat ? "editor:on" : "editor:off") })}</span>
               </Button>
               <span
-                className="h-5 flex-none self-center border-l border-[#cbdbe4] mx-1.5 max-[760px]:hidden"
+                className="h-5 flex-none self-center border-l border-[#cbdbe4] mx-1.5 hidden @min-[64rem]/editor:block"
                 aria-hidden="true"
               />
               <Button
                 variant="ghost"
                 size="toolbar"
+                aria-label={t("common:format")}
                 tooltip={t("editor:formatHint")}
                 onClick={() => transform("format")}
               >
                 <Braces aria-hidden="true" size={14} />
-                {t("common:format")}
+                <span className="hidden @min-[64rem]/editor:inline">{t("common:format")}</span>
               </Button>
               <Button
                 variant="ghost"
                 size="toolbar"
+                aria-label={t("editor:compress")}
                 tooltip={t("editor:compressHint")}
                 onClick={() => transform("compress")}
               >
                 <Minimize2 aria-hidden="true" size={14} />
-                {t("editor:compress")}
+                <span className="hidden @min-[64rem]/editor:inline">{t("editor:compress")}</span>
               </Button>
               <Button
                 variant="ghost"
                 size="toolbar"
+                aria-label={t("editor:validate")}
                 tooltip={t("editor:validateHint")}
                 onClick={validate}
               >
                 <Check aria-hidden="true" size={14} />
-                {t("editor:validate")}
+                <span className="hidden @min-[64rem]/editor:inline">{t("editor:validate")}</span>
               </Button>
               <span
-                className="h-5 flex-none self-center border-l border-[#cbdbe4] mx-1.5 max-[760px]:hidden"
+                className="h-5 flex-none self-center border-l border-[#cbdbe4] mx-1.5 hidden @min-[64rem]/editor:block"
                 aria-hidden="true"
               />
               <Button
                 variant="ghost"
                 size="toolbar"
+                aria-label={t("editor:search")}
                 tooltip={t("editor:searchHint")}
                 onClick={() => editors.current.get(activeId)?.openSearch()}
               >
                 <Search aria-hidden="true" size={14} />
-                {t("editor:search")}
+                <span className="hidden @min-[64rem]/editor:inline">{t("editor:search")}</span>
               </Button>
               <Button
                 variant="ghost"
                 size="toolbar"
+                aria-label={t("common:copy")}
                 tooltip={t("editor:copyHint")}
                 onClick={copy}
               >
                 <Clipboard aria-hidden="true" size={14} />
-                {t("common:copy")}
+                <span className="hidden @min-[64rem]/editor:inline">{t("common:copy")}</span>
               </Button>
               <span
-                className="h-5 flex-none self-center border-l border-[#cbdbe4] mx-1.5 max-[760px]:hidden"
+                className="h-5 flex-none self-center border-l border-[#cbdbe4] mx-1.5 hidden @min-[64rem]/editor:block"
                 aria-hidden="true"
               />
               <Button
                 variant="ghost"
                 size="toolbar"
+                aria-label={t("editor:unescape")}
                 tooltip={t("editor:unescapeHint")}
                 onClick={() => updateActive(removeEscaping(currentTab.content))}
               >
-                {t("editor:unescape")}
+                <ArrowLeftToLine aria-hidden="true" size={14} />
+                <span className="hidden @min-[64rem]/editor:inline">{t("editor:unescape")}</span>
               </Button>
               <Button
                 variant="ghost"
                 size="toolbar"
+                aria-label={t("editor:escape")}
                 tooltip={t("editor:escapeHint")}
                 onClick={() => updateActive(addEscaping(currentTab.content))}
               >
-                {t("editor:escape")}
+                <ArrowRightFromLine aria-hidden="true" size={14} />
+                <span className="hidden @min-[64rem]/editor:inline">{t("editor:escape")}</span>
               </Button>
               <span
-                className="h-5 flex-none self-center border-l border-[#cbdbe4] mx-1.5 max-[760px]:hidden"
+                className="h-5 flex-none self-center border-l border-[#cbdbe4] mx-1.5 hidden @min-[64rem]/editor:block"
                 aria-hidden="true"
               />
               <Button
                 variant="ghost-destructive"
                 size="toolbar"
+                aria-label={t("common:clear")}
                 tooltip={t("editor:clearHint")}
                 onClick={() => updateActive("")}
               >
                 <Trash2 aria-hidden="true" size={14} />
-                {t("common:clear")}
+                <span className="hidden @min-[64rem]/editor:inline">{t("common:clear")}</span>
               </Button>
               <span className="flex-1" />
               <WithTooltip content={translateMessage(currentTab.error)}>

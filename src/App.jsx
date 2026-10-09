@@ -90,7 +90,7 @@ export default function App() {
             </NavLink>
             <NavLink to="/diff">
               <GitCompare aria-hidden="true" size={18} />
-              JSON Diff
+              Diff
             </NavLink>
           </nav>
           <LanguageSwitcher />
