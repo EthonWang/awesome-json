@@ -272,7 +272,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                 onClick={() => setAutoFormat((value) => !value)}
               >
                 <Sparkles aria-hidden="true" size={14} />
-                <span className="hidden @min-[64rem]/editor:inline">{t("editor:autoFormat", { state: t(autoFormat ? "editor:on" : "editor:off") })}</span>
+                <span className="hidden @min-[48rem]/editor:inline">{t("editor:autoFormat", { state: t(autoFormat ? "editor:on" : "editor:off") })}</span>
               </Button>
               <span
                 className="h-5 flex-none self-center border-l border-[#cbdbe4] mx-1.5 hidden @min-[64rem]/editor:block"
@@ -286,7 +286,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                 onClick={() => transform("format")}
               >
                 <Braces aria-hidden="true" size={14} />
-                <span className="hidden @min-[64rem]/editor:inline">{t("common:format")}</span>
+                <span className="hidden @min-[48rem]/editor:inline">{t("common:format")}</span>
               </Button>
               <Button
                 variant="ghost"
@@ -296,7 +296,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                 onClick={() => transform("compress")}
               >
                 <Minimize2 aria-hidden="true" size={14} />
-                <span className="hidden @min-[64rem]/editor:inline">{t("editor:compress")}</span>
+                <span className="hidden @min-[48rem]/editor:inline">{t("editor:compress")}</span>
               </Button>
               <Button
                 variant="ghost"
@@ -306,7 +306,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                 onClick={validate}
               >
                 <Check aria-hidden="true" size={14} />
-                <span className="hidden @min-[64rem]/editor:inline">{t("editor:validate")}</span>
+                <span className="hidden @min-[48rem]/editor:inline">{t("editor:validate")}</span>
               </Button>
               <span
                 className="h-5 flex-none self-center border-l border-[#cbdbe4] mx-1.5 hidden @min-[64rem]/editor:block"
@@ -320,7 +320,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                 onClick={() => editors.current.get(activeId)?.openSearch()}
               >
                 <Search aria-hidden="true" size={14} />
-                <span className="hidden @min-[64rem]/editor:inline">{t("editor:search")}</span>
+                <span className="hidden @min-[48rem]/editor:inline">{t("editor:search")}</span>
               </Button>
               <Button
                 variant="ghost"
@@ -330,7 +330,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                 onClick={copy}
               >
                 <Clipboard aria-hidden="true" size={14} />
-                <span className="hidden @min-[64rem]/editor:inline">{t("common:copy")}</span>
+                <span className="hidden @min-[48rem]/editor:inline">{t("common:copy")}</span>
               </Button>
               <span
                 className="h-5 flex-none self-center border-l border-[#cbdbe4] mx-1.5 hidden @min-[64rem]/editor:block"
@@ -344,7 +344,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                 onClick={() => updateActive(removeEscaping(currentTab.content))}
               >
                 <ArrowLeftToLine aria-hidden="true" size={14} />
-                <span className="hidden @min-[64rem]/editor:inline">{t("editor:unescape")}</span>
+                <span className="hidden @min-[48rem]/editor:inline">{t("editor:unescape")}</span>
               </Button>
               <Button
                 variant="ghost"
@@ -354,7 +354,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                 onClick={() => updateActive(addEscaping(currentTab.content))}
               >
                 <ArrowRightFromLine aria-hidden="true" size={14} />
-                <span className="hidden @min-[64rem]/editor:inline">{t("editor:escape")}</span>
+                <span className="hidden @min-[48rem]/editor:inline">{t("editor:escape")}</span>
               </Button>
               <span
                 className="h-5 flex-none self-center border-l border-[#cbdbe4] mx-1.5 hidden @min-[64rem]/editor:block"
@@ -368,7 +368,7 @@ export default function EditorPage({ ref, showToast, onDirty, active = true }) {
                 onClick={() => updateActive("")}
               >
                 <Trash2 aria-hidden="true" size={14} />
-                <span className="hidden @min-[64rem]/editor:inline">{t("common:clear")}</span>
+                <span className="hidden @min-[48rem]/editor:inline">{t("common:clear")}</span>
               </Button>
               <span className="flex-1" />
               <WithTooltip content={translateMessage(currentTab.error)}>
