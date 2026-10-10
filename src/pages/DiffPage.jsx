@@ -20,7 +20,6 @@ import {
   Eye,
   FileJson,
   GitCompare,
-  BookOpen,
   Pencil,
   Sparkles,
   Trash2,
@@ -252,13 +251,12 @@ export default function DiffPage({
           <div className="flex gap-[9px] max-[760px]:w-full max-[760px]:flex-wrap">
             <Button
               ref={rulesOpenerRef}
-              variant="outline"
+              variant="ghost"
               size="sm"
               tooltip={t("diff:rulesHint")}
               aria-haspopup="dialog"
               onClick={() => setRulesOpen(true)}
             >
-              <BookOpen aria-hidden="true" size={15} />
               {t("diff:viewRules")}
             </Button>
             <Button
